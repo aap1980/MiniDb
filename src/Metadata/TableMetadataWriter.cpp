@@ -1,4 +1,4 @@
-#include "../../include/MiniDb/Metadata/TableMetadataWriter.h"
+#include "TableMetadataWriter.h"
 #include <fstream>
 
 using namespace MiniDb::Metadata;
