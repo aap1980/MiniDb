@@ -10,9 +10,13 @@ namespace MiniDb::Table {
         : tableName(tableName) {
     }
 
-    bool Table::loadMetadataFromFile(const std::string& metadataFile) {
+    bool Table::loadMetadata(const std::string& metadataFile) {
         TableMetadataReader reader(tableName);
         return reader.loadFromFile(metadataFile);
+    }
+
+    bool Table::loadData(const std::string& dataFile) {
+        return true;
     }
 
     void Table::addRow(const std::vector<std::string>& row) {

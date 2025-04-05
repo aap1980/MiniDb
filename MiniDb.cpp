@@ -32,7 +32,7 @@ int main() {
 	Table usersTable("Users");
 
 	// £adujemy metadane tabeli
-	if (usersTable.loadMetadataFromFile("Users.md")) {
+	if (usersTable.loadMetadata("Users.md")) {
 		std::cout << "Tabela metadanych za³adowana.\n";
 
 		// Dodajemy wiersze do tabeli

@@ -2,7 +2,6 @@
 #include <iostream>
 #include "Database.h"
 #include "../Table/Table.h"
-using namespace MiniDb::Table;
 
 namespace MiniDb::Database {
 
@@ -13,13 +12,13 @@ namespace MiniDb::Database {
 			if (entry.path().extension() == ".md") {
 				std::string tableName = entry.path().stem().string();
 
-				Table table;
+				MiniDb::Table::Table table(tableName);
 				if (table.loadMetadata(path + tableName + ".md") &&
 					table.loadData(path + tableName + ".dat")) {
 					tables.emplace(tableName, std::move(table));
 				}
 				else {
-					std::cerr << "Nie uda³o siê za³adowaæ tabeli: " << tableName << "\n";
+					std::cerr << "Nie udaÅ‚o siÄ™ zaÅ‚adowaÄ‡ tabeli: " << tableName << "\n";
 				}
 			}
 		}
@@ -27,7 +26,7 @@ namespace MiniDb::Database {
 		return !tables.empty();
 	}
 
-	Table* Database::getTable(const std::string& tableName) {
+	MiniDb::Table::Table* Database::getTable(const std::string& tableName) {
 		auto it = tables.find(tableName);
 		return it != tables.end() ? &it->second : nullptr;
 	}

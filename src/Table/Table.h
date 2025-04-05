@@ -13,7 +13,8 @@ namespace MiniDb::Table {
         std::vector<std::vector<std::string>> rows;  // Przechowuje dane wierszy jako wektory stringów
 
         Table(const std::string& tableName);
-        bool loadMetadataFromFile(const std::string& metadataFile);
+        bool loadMetadata(const std::string& metadataFile);
+        bool loadData(const std::string& dataFile);
         void addRow(const std::vector<std::string>& row);
         void printTable() const;
     };
