@@ -21,7 +21,7 @@ namespace MiniDb::Table {
 
     void Table::addRow(const std::vector<std::string>& row) {
         if (row.size() != columns.size()) {
-            std::cerr << "B³¹d: liczba danych w wierszu nie pasuje do liczby kolumn.\n";
+            std::cerr << "Error: the number of data in a row does not match the number of columns.\n";
             return;
         }
         rows.push_back(row);

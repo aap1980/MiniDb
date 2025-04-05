@@ -13,7 +13,7 @@ namespace MiniDb::Metadata {
     bool TableMetadataReader::loadFromFile(const std::string& filename, MiniDb::Table::Table& table) {
         std::ifstream file(filename);
         if (!file.is_open()) {
-            std::cerr << "Błąd otwarcia pliku: " << filename << std::endl;
+            std::cerr << "Error opening file: " << filename << std::endl;
             return false;
         }
 
@@ -31,13 +31,13 @@ namespace MiniDb::Metadata {
 
                 std::getline(ss, objectName, SEP);
                 if (objectName != "Column") {
-                    std::cerr << "Błąd: Niepoprawna linia w pliku. Oczekiwano 'Column'." << std::endl;
+                    std::cerr << "Error: Incorrect line in file. Expected  'Column'." << std::endl;
                     return false;
                 }
 
                 std::getline(ss, attributeName, ':');
                 if (attributeName != "Name") {
-                    std::cerr << "Błąd: Oczekiwano 'Name' w definicji kolumny." << std::endl;
+                    std::cerr << "Error: Expected 'Name' in column definition." << std::endl;
                     return false;
                 }
                 std::getline(ss, attributeValue, SEP);
@@ -45,7 +45,7 @@ namespace MiniDb::Metadata {
 
                 std::getline(ss, attributeName, ':');
                 if (attributeName != "Type") {
-                    std::cerr << "Błąd: Oczekiwano 'Type' w definicji kolumny." << std::endl;
+                    std::cerr << "Error: Expected 'Type' in column definition." << std::endl;
                     return false;
                 }
                 std::getline(ss, attributeValue, SEP);

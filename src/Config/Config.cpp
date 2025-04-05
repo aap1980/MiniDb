@@ -8,7 +8,7 @@ namespace MiniDb::Config {
 	bool Config::loadConfig(const std::string& filename) {
 		std::ifstream file(filename);
 		if (!file.is_open()) {
-			std::cerr << "B³¹d otwarcia pliku konfiguracyjnego: " << filename << std::endl;
+			std::cerr << "Error opening configuration file: " << filename << std::endl;
 			return false;
 		}
 

@@ -16,9 +16,10 @@ namespace MiniDb::Database {
 				if (table.loadMetadata(path + tableName + ".md") &&
 					table.loadData(path + tableName + ".dat")) {
 					tables.emplace(tableName, std::move(table));
+					std::cout << "Successfully loaded table: " << tableName << "\n";
 				}
 				else {
-					std::cerr << "Nie udało się załadować tabeli: " << tableName << "\n";
+					std::cerr << "Failed to load table: " << tableName << "\n";
 				}
 			}
 		}
