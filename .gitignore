@@ -1,6 +1,3 @@
 /.vs
-*.vcxproj
-*.filters
-*.user
 /MiniDb/x64
 /x64
