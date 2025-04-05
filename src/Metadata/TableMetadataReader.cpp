@@ -1,29 +1,25 @@
-#include "TableMetadataReader.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include "TableMetadataReader.h"
+#include "../Table/Table.h"
 
 namespace MiniDb::Metadata {
-
-    Column::Column(const std::string& name, const std::string& type)
-        : name(name), type(type) {
-    }
 
     TableMetadataReader::TableMetadataReader(const std::string& tableName)
         : tableName(tableName) {
     }
 
-    bool TableMetadataReader::loadFromFile(const std::string& filename) {
+    bool TableMetadataReader::loadFromFile(const std::string& filename, MiniDb::Table::Table& table) {
         std::ifstream file(filename);
         if (!file.is_open()) {
-            std::cerr << "B³¹d otwarcia pliku: " << filename << std::endl;
+            std::cerr << "BÅ‚Ä…d otwarcia pliku: " << filename << std::endl;
             return false;
         }
 
         std::string line;
         while (std::getline(file, line)) {
             if (line.find("Table") != std::string::npos) {
-                // Sprawdzamy, czy nazwa tabeli pasuje
                 if (line.find(tableName) == std::string::npos) {
                     continue;
                 }
@@ -35,13 +31,13 @@ namespace MiniDb::Metadata {
 
                 std::getline(ss, objectName, SEP);
                 if (objectName != "Column") {
-                    std::cerr << "B³¹d: Niepoprawna linia w pliku. Oczekiwano 'Column'." << std::endl;
+                    std::cerr << "BÅ‚Ä…d: Niepoprawna linia w pliku. Oczekiwano 'Column'." << std::endl;
                     return false;
                 }
 
                 std::getline(ss, attributeName, ':');
                 if (attributeName != "Name") {
-                    std::cerr << "B³¹d: Oczekiwano 'Name' w definicji kolumny." << std::endl;
+                    std::cerr << "BÅ‚Ä…d: Oczekiwano 'Name' w definicji kolumny." << std::endl;
                     return false;
                 }
                 std::getline(ss, attributeValue, SEP);
@@ -49,13 +45,13 @@ namespace MiniDb::Metadata {
 
                 std::getline(ss, attributeName, ':');
                 if (attributeName != "Type") {
-                    std::cerr << "B³¹d: Oczekiwano 'Type' w definicji kolumny." << std::endl;
+                    std::cerr << "BÅ‚Ä…d: Oczekiwano 'Type' w definicji kolumny." << std::endl;
                     return false;
                 }
                 std::getline(ss, attributeValue, SEP);
                 columnType = attributeValue;
 
-                columns.emplace_back(columnName, columnType);
+                table.columns.emplace_back(columnName, columnType);
             }
         }
 

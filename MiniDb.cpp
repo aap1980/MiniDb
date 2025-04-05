@@ -1,10 +1,9 @@
 #include <iostream>
 #include <filesystem>
 #include "src/Config/Config.h"
+#include "src/Database/Database.h"
 #include "src/Metadata/TableMetadataWriter.h"
 #include "src/Table/Table.h"
-
-using namespace MiniDb::Table;
 
 int main() {
 	std::filesystem::path current_path = std::filesystem::current_path();
@@ -15,6 +14,10 @@ int main() {
 		std::cerr << "B³¹d wczytywania pliku konfiguracyjnego." << std::endl;
 		return 1;
 	}
+
+	MiniDb::Database::Database database;
+	
+	database.loadAllTables(config.tablesPath);
 
 
 	/*TableMetadataWriter writer("Users");
@@ -29,7 +32,7 @@ int main() {
 		std::cerr << "B³¹d zapisu pliku.\n";
 	}*/
 
-	Table usersTable("Users");
+	MiniDb::Table::Table usersTable("Users");
 
 	// £adujemy metadane tabeli
 	if (usersTable.loadMetadata("Users.md")) {

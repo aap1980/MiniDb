@@ -1,16 +1,15 @@
 #pragma once
 #include <vector>
 #include <string>
-#include "../Metadata/TableMetadataReader.h"
-using namespace MiniDb::Metadata;
+#include "Column.h"
 
 namespace MiniDb::Table {
 
     class Table {
     public:
         std::string tableName;
-        std::vector<Column> columns;
-        std::vector<std::vector<std::string>> rows;  // Przechowuje dane wierszy jako wektory stringów
+        std::vector<MiniDb::Table::Column> columns;
+        std::vector<std::vector<std::string>> rows;
 
         Table(const std::string& tableName);
         bool loadMetadata(const std::string& metadataFile);

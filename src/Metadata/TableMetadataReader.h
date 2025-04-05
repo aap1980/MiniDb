@@ -1,26 +1,18 @@
 #pragma once
-#include <string>
 #include <vector>
+#include <string>
+#include "../Table/Table.h"
 
 namespace MiniDb::Metadata {
 
-    class Column {
-    public:
-        std::string name;
-        std::string type;
+	class TableMetadataReader {
+	public:
+		explicit TableMetadataReader(const std::string& tableName);
 
-        Column(const std::string& name, const std::string& type);
-    };
-
-    class TableMetadataReader {
-    private:
-        constexpr static char SEP = 0x1F;
-    public:
-        std::string tableName;
-        std::vector<Column> columns;
-
-        TableMetadataReader(const std::string& tableName);
-        bool loadFromFile(const std::string& filename);
-    };
+		bool loadFromFile(const std::string& filename, MiniDb::Table::Table& table);
+	private:
+		std::string tableName;
+		constexpr static char SEP = 0x1F;
+	};
 
 }
