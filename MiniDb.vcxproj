@@ -133,12 +133,11 @@
     <ClCompile Include="MiniDb.cpp" />
     <ClCompile Include="src\Config\Config.cpp" />
     <ClCompile Include="src\Database\Database.cpp" />
-    <ClCompile Include="src\Metadata\TableMetadataReader.cpp" />
-    <ClCompile Include="src\Metadata\TableMetadataWriter.cpp" />
     <ClCompile Include="src\Table\Column.cpp" />
     <ClCompile Include="src\Table\QueryCondition.cpp" />
     <ClCompile Include="src\Table\Table.cpp" />
     <ClCompile Include="src\Table\TableDataWriter.cpp" />
+    <ClCompile Include="src\Table\TableMetadata.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="config.ini">
@@ -149,12 +148,11 @@
     <ClInclude Include="src\Config\Config.h" />
     <ClInclude Include="src\Constants.h" />
     <ClInclude Include="src\Database\Database.h" />
-    <ClInclude Include="src\Metadata\TableMetadataReader.h" />
-    <ClInclude Include="src\Metadata\TableMetadataWriter.h" />
     <ClInclude Include="src\Table\Column.h" />
     <ClInclude Include="src\Table\QueryCondition.h" />
     <ClInclude Include="src\Table\Table.h" />
     <ClInclude Include="src\Table\TableDataWriter.h" />
+    <ClInclude Include="src\Table\TableMetadata.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -2,7 +2,6 @@
 #include <filesystem>
 #include "src/Config/Config.h"
 #include "src/Database/Database.h"
-#include "src/Metadata/TableMetadataWriter.h"
 #include "src/Table/Table.h"
 #include "src/Table/QueryCondition.h"
 

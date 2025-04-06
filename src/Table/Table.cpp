@@ -3,23 +3,18 @@
 #include <sstream>
 #include "Table.h"
 #include "../Constants.h"
-#include "../Metadata/TableMetadataReader.h"
 #include "../Config/Config.h"
+#include "TableMetadata.h"
 
 namespace MiniDb::Table {
 
 	Table::Table(const std::string& tableName)
 		: tableName(tableName) {
 		std::string tablesPath = MiniDb::Config::Config::getInstance().getTablesPath();
-		metadataFile = tablesPath + tableName + ".md";
+		std::string metadataFile = tablesPath + tableName + ".md";
+		MiniDb::Table::TableMetadata metadata(metadataFile);
 		dataFile = tablesPath + tableName + ".dat";
-		loadMetadata(metadataFile);
 		std::cout << "Successfully loaded table: " << tableName << "\n";
-	}
-
-	bool Table::loadMetadata(const std::string& metadataFile) {
-		MiniDb::Metadata::TableMetadataReader reader(tableName);
-		return reader.loadFromFile(metadataFile, *this);
 	}
 
 	bool Table::readDataFromFile(const std::string& filename, std::vector<std::vector<std::string>>& rows) const {
@@ -46,7 +41,7 @@ namespace MiniDb::Table {
 	}
 
 	void Table::addRow(const std::vector<std::string>& row) {
-		if (row.size() != columns.size()) {
+		if (row.size() != metadata.columns.size()) {
 			std::cerr << "Error: the number of data in a row does not match the number of columns.\n";
 			return;
 		}
@@ -71,7 +66,7 @@ namespace MiniDb::Table {
 
 			for (const auto& [column, value] : conditions) {
 				auto matchLambda = [&row, &column, &value, &colIndex, this](bool& match) {
-					if (columns[colIndex].name == column && row[colIndex] != value) {
+					if (metadata.columns[colIndex].name == column && row[colIndex] != value) {
 						match = false;
 					}
 					};
@@ -113,7 +108,7 @@ namespace MiniDb::Table {
 
 			for (const auto& [column, value] : conditions) {
 				auto matchLambda = [&row = *it, &column, &value, &colIndex, this](bool& match) {
-					if (columns[colIndex].name == column && row[colIndex] != value) {
+					if (metadata.columns[colIndex].name == column && row[colIndex] != value) {
 						match = false;
 					}
 					};
@@ -200,7 +195,7 @@ namespace MiniDb::Table {
 
 	void Table::printTable() const {
 		std::cout << "Tabela: " << tableName << "\n";
-		for (const auto& column : columns) {
+		for (const auto& column : metadata.columns) {
 			std::cout << column.name << "\t";
 		}
 		std::cout << "\n";

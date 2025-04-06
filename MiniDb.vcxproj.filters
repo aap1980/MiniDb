@@ -18,13 +18,7 @@
     <ClCompile Include="MiniDb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Metadata\TableMetadataWriter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Table\Table.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Metadata\TableMetadataReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Config\Config.cpp">
@@ -42,15 +36,12 @@
     <ClCompile Include="src\Table\QueryCondition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Table\TableMetadata.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Config\Config.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Metadata\TableMetadataReader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Metadata\TableMetadataWriter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Table\Table.h">
@@ -69,6 +60,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Table\QueryCondition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Table\TableMetadata.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
