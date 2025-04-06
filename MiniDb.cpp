@@ -16,9 +16,15 @@ int main() {
 	}
 
 	MiniDb::Database::Database database;
-	
+
 	database.loadAllTables(config.tablesPath);
 
+	MiniDb::Table::Table& usersTable = database.getTable("Users");
+
+	usersTable.addRow({ "1", "user1" });
+	usersTable.addRow({ "2", "user2" });
+
+	usersTable.printTable();
 
 	/*TableMetadataWriter writer("Users");
 	writer.addColumn("id", "int");
@@ -32,24 +38,5 @@ int main() {
 		std::cerr << "B³¹d zapisu pliku.\n";
 	}*/
 
-	MiniDb::Table::Table usersTable("Users");
-
-	// £adujemy metadane tabeli
-	if (usersTable.loadMetadata("Users.md")) {
-		std::cout << "Tabela metadanych za³adowana.\n";
-
-		// Dodajemy wiersze do tabeli
-		usersTable.addRow({ "1", "user1" });
-		usersTable.addRow({ "2", "user2" });
-
-		// Wyœwietlamy tabelê
-		usersTable.printTable();
-	}
-	else {
-		std::cerr << "B³¹d ³adowania pliku metadanych.\n";
-	}
-
 	return 0;
-
-	std::cout << "Hello World!\n";
 }

@@ -8,7 +8,7 @@ namespace MiniDb::Database {
     class Database {
     public:
         bool loadAllTables(const std::string& path);
-        MiniDb::Table::Table* getTable(const std::string& tableName);
+        MiniDb::Table::Table& getTable(const std::string& tableName);
         void listTables() const;
 
     private:

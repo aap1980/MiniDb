@@ -25,6 +25,25 @@ namespace MiniDb::Table {
             return;
         }
         rows.push_back(row);
+        saveDataToFile(tableName + ".dat");
+    }
+
+    bool Table::saveDataToFile(const std::string& filename) const {
+        std::ofstream file(filename, std::ios::app);
+        if (!file.is_open()) {
+            std::cerr << "Error opening file: " << filename << std::endl;
+            return false;
+        }
+
+        for (const auto& row : rows) {
+            for (const auto& data : row) {
+                file << data << static_cast<char>(0x1F);
+            }
+            file << '\n';
+        }
+
+        file.close();
+        return true;
     }
 
     void Table::printTable() const {

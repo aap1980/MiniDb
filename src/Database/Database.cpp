@@ -27,9 +27,12 @@ namespace MiniDb::Database {
 		return !tables.empty();
 	}
 
-	MiniDb::Table::Table* Database::getTable(const std::string& tableName) {
+	MiniDb::Table::Table& Database::getTable(const std::string& tableName) {
 		auto it = tables.find(tableName);
-		return it != tables.end() ? &it->second : nullptr;
+		if (it != tables.end()) {
+			return it->second;
+		}
+		throw std::runtime_error("Table not found: " + tableName);
 	}
 
 	void Database::listTables() const {
