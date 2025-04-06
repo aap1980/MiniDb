@@ -2,12 +2,15 @@
 #include <sstream>
 #include <iostream>
 #include "../Constants.h"
+#include "../Config/Config.h"
 #include "TableMetadata.h"
 
 namespace MiniDb::Table {
 
-	TableMetadata::TableMetadata(const std::string filename)
-		: filename(filename) {
+	TableMetadata::TableMetadata(const std::string tableName)
+		: tableName(tableName) {
+		std::string tablesPath = MiniDb::Config::Config::getInstance().getTablesPath();
+		filename = tablesPath + tableName + ".md";
 		loadFromFile();
 	}
 

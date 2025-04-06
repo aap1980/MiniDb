@@ -9,10 +9,8 @@
 namespace MiniDb::Table {
 
 	Table::Table(const std::string& tableName)
-		: tableName(tableName) {
+		: tableName(tableName), metadata(tableName) {
 		std::string tablesPath = MiniDb::Config::Config::getInstance().getTablesPath();
-		std::string metadataFile = tablesPath + tableName + ".md";
-		MiniDb::Table::TableMetadata metadata(metadataFile);
 		dataFile = tablesPath + tableName + ".dat";
 		std::cout << "Successfully loaded table: " << tableName << "\n";
 	}
@@ -32,7 +30,7 @@ namespace MiniDb::Table {
 				row.push_back(line.substr(0, pos));
 				line.erase(0, pos + 1);
 			}
-			row.push_back(line);  // Dodaj ostatni element
+			row.push_back(line);
 			rows.push_back(row);
 		}
 
