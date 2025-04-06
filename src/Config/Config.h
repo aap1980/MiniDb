@@ -4,10 +4,14 @@
 namespace MiniDb::Config {
 
     class Config {
-    public:
-        std::string tablesPath;
+	private:
+		std::string tablesPath;
+		Config() = default;
 
+    public:
+		static Config& getInstance();
         bool loadConfig(const std::string& filename);
+		const std::string& getTablesPath() const;
     };
 
 }

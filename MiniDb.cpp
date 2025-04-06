@@ -8,16 +8,11 @@
 int main() {
 	std::filesystem::path current_path = std::filesystem::current_path();
 
-	MiniDb::Config::Config config;
-
-	if (!config.loadConfig("config.ini")) {
-		std::cerr << "B³¹d wczytywania pliku konfiguracyjnego." << std::endl;
-		return 1;
-	}
+	MiniDb::Config::Config::getInstance().loadConfig("config.ini");
 
 	MiniDb::Database::Database database;
 
-	database.loadAllTables(config.tablesPath);
+	database.loadAllTables();
 
 	MiniDb::Table::Table& usersTable = database.getTable("Users");
 

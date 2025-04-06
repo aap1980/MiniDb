@@ -6,16 +6,19 @@
 namespace MiniDb::Table {
 
 	class Table {
-	public:
+	private:
 		std::string tableName;
-		std::vector<MiniDb::Table::Column> columns;
-		std::vector<std::vector<std::string>> rows;
-
-		Table(const std::string& tableName);
+		std::string metadataFile;
+		std::string dataFile;
 		bool loadMetadata(const std::string& metadataFile);
 		bool loadData(const std::string& dataFile);
-		void addRow(const std::vector<std::string>& row);
 		bool saveDataToFile(const std::string& filename) const;
+
+	public:
+		std::vector<MiniDb::Table::Column> columns;
+		std::vector<std::vector<std::string>> rows;
+		Table(const std::string& tableName);
+		void addRow(const std::vector<std::string>& row);
 		void printTable() const;
 	};
 
