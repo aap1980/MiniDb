@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include "Table.h"
 #include "../Constants.h"
 #include "../Metadata/TableMetadataReader.h"
@@ -21,17 +22,141 @@ namespace MiniDb::Table {
 		return reader.loadFromFile(metadataFile, *this);
 	}
 
+	bool Table::readDataFromFile(const std::string& filename, std::vector<std::vector<std::string>>& rows) const {
+		std::ifstream file(filename);
+		if (!file.is_open()) {
+			std::cerr << "Error opening data file: " << filename << std::endl;
+			return false;
+		}
+
+		std::string line;
+		while (std::getline(file, line)) {
+			std::vector<std::string> row;
+			size_t pos = 0;
+			while ((pos = line.find(static_cast<char>(MiniDb::SEP))) != std::string::npos) {
+				row.push_back(line.substr(0, pos));
+				line.erase(0, pos + 1);
+			}
+			row.push_back(line);  // Dodaj ostatni element
+			rows.push_back(row);
+		}
+
+		file.close();
+		return true;
+	}
+
 	void Table::addRow(const std::vector<std::string>& row) {
 		if (row.size() != columns.size()) {
 			std::cerr << "Error: the number of data in a row does not match the number of columns.\n";
 			return;
 		}
-		std::vector<std::vector<std::string>> rows = { row };
-		saveDataToFile(dataFile, rows);
+
+		if (!writeRowToFile(row)) {
+			std::cerr << "Error: failed to add row to file.\n";
+		}
+	}
+
+	void Table::updateRow(const QueryCondition& condition, const std::vector<std::string>& newRow) {
+		std::vector<std::vector<std::string>> rows;
+		if (!readDataFromFile(dataFile, rows)) {
+			return;
+		}
+
+		bool found = false;
+		for (auto& row : rows) {
+			bool match = true;
+
+			const auto& conditions = condition.getConditions();
+			size_t colIndex = 0;
+
+			for (const auto& [column, value] : conditions) {
+				auto matchLambda = [&row, &column, &value, &colIndex, this](bool& match) {
+					if (columns[colIndex].name == column && row[colIndex] != value) {
+						match = false;
+					}
+					};
+				matchLambda(match);
+
+				++colIndex;
+			}
+
+			if (match) {
+				for (size_t i = 0; i < newRow.size(); ++i) {
+					row[i] = newRow[i];
+				}
+				found = true;
+				break;
+			}
+		}
+
+		if (found) {
+			saveDataToFile(dataFile, rows);
+		}
+		else {
+			std::cerr << "Error: row not found for update.\n";
+		}
+	}
+
+	void Table::deleteRow(const QueryCondition& condition) {
+		std::vector<std::vector<std::string>> rows;
+		if (!readDataFromFile(dataFile, rows)) {
+			return;
+		}
+
+		bool found = false;
+		auto it = rows.begin();
+
+		while (it != rows.end()) {
+			bool match = true;
+			const auto& conditions = condition.getConditions();
+			size_t colIndex = 0;
+
+			for (const auto& [column, value] : conditions) {
+				auto matchLambda = [&row = *it, &column, &value, &colIndex, this](bool& match) {
+					if (columns[colIndex].name == column && row[colIndex] != value) {
+						match = false;
+					}
+					};
+				matchLambda(match);
+
+				++colIndex;
+			}
+
+			if (match) {
+				it = rows.erase(it);
+				found = true;
+			}
+			else {
+				++it;
+			}
+		}
+
+		if (found) {
+			saveDataToFile(dataFile, rows);
+		}
+		else {
+			std::cerr << "Error: row not found for deletion.\n";
+		}
+	}
+
+	bool Table::writeRowToFile(const std::vector<std::string>& row) const {
+		std::ofstream file(dataFile, std::ios::app);
+		if (!file.is_open()) {
+			std::cerr << "Error opening file: " << dataFile << std::endl;
+			return false;
+		}
+
+		for (const auto& data : row) {
+			file << data << static_cast<char>(MiniDb::SEP);
+		}
+		file << '\n';
+
+		file.close();
+		return true;
 	}
 
 	bool Table::saveDataToFile(const std::string& filename, const std::vector<std::vector<std::string>>& rows) const {
-		std::ofstream file(filename, std::ios::app);
+		std::ofstream file(filename, std::ios::trunc);
 		if (!file.is_open()) {
 			std::cerr << "Error opening file: " << filename << std::endl;
 			return false;

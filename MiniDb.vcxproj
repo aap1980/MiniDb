@@ -136,6 +136,7 @@
     <ClCompile Include="src\Metadata\TableMetadataReader.cpp" />
     <ClCompile Include="src\Metadata\TableMetadataWriter.cpp" />
     <ClCompile Include="src\Table\Column.cpp" />
+    <ClCompile Include="src\Table\QueryCondition.cpp" />
     <ClCompile Include="src\Table\Table.cpp" />
     <ClCompile Include="src\Table\TableDataWriter.cpp" />
   </ItemGroup>
@@ -151,6 +152,7 @@
     <ClInclude Include="src\Metadata\TableMetadataReader.h" />
     <ClInclude Include="src\Metadata\TableMetadataWriter.h" />
     <ClInclude Include="src\Table\Column.h" />
+    <ClInclude Include="src\Table\QueryCondition.h" />
     <ClInclude Include="src\Table\Table.h" />
     <ClInclude Include="src\Table\TableDataWriter.h" />
   </ItemGroup>

@@ -4,6 +4,7 @@
 #include "src/Database/Database.h"
 #include "src/Metadata/TableMetadataWriter.h"
 #include "src/Table/Table.h"
+#include "src/Table/QueryCondition.h"
 
 int main() {
 	std::filesystem::path current_path = std::filesystem::current_path();
@@ -18,20 +19,22 @@ int main() {
 
 	usersTable.addRow({ "1", "user1" });
 	usersTable.addRow({ "2", "user2" });
-
+	usersTable.addRow({ "3", "user3" });
 	usersTable.printTable();
+	std::cout << "\n";
 
-	/*TableMetadataWriter writer("Users");
-	writer.addColumn("id", "int");
-	writer.addColumn("login", "string");
+	MiniDb::Table::QueryCondition updateCondition;
+	updateCondition.addCondition("id", "2");
+	std::vector<std::string> updateRow = { "2", "John Doe" };
+	usersTable.updateRow(updateCondition, updateRow);
+	usersTable.printTable();
+	std::cout << "\n";
 
-	std::filesystem::path file_path = current_path / "Users.md";
-	if (writer.saveToFile(file_path.string())) {
-		std::cout << "Plik metadanych zapisany.\n";
-	}
-	else {
-		std::cerr << "B³¹d zapisu pliku.\n";
-	}*/
+	MiniDb::Table::QueryCondition deleteCondition;
+	deleteCondition.addCondition("id", "1");
+	usersTable.deleteRow(deleteCondition);
+	usersTable.printTable();
+	std::cout << "\n";
 
 	return 0;
 }
