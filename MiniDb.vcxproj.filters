@@ -48,10 +48,13 @@
     <ClCompile Include="src\Console\Console.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Parser\ParseNode.cpp">
+    <ClCompile Include="src\Parser\Parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Parser\Parser.cpp">
+    <ClCompile Include="src\Parser\Token.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Parser\Lexer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -92,10 +95,16 @@
     <ClInclude Include="src\Console\Console.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Parser\ParseNode.h">
+    <ClInclude Include="src\Parser\Parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Parser\Parser.h">
+    <ClInclude Include="src\Parser\Token.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Parser\Lexer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Parser\AST.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

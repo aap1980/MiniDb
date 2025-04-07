@@ -134,8 +134,9 @@
     <ClCompile Include="src\Config\Config.cpp" />
     <ClCompile Include="src\Console\Console.cpp" />
     <ClCompile Include="src\Database\Database.cpp" />
-    <ClCompile Include="src\Parser\ParseNode.cpp" />
+    <ClCompile Include="src\Parser\Lexer.cpp" />
     <ClCompile Include="src\Parser\Parser.cpp" />
+    <ClCompile Include="src\Parser\Token.cpp" />
     <ClCompile Include="src\Table\Column.cpp" />
     <ClCompile Include="src\Table\ColumnUpdate.cpp" />
     <ClCompile Include="src\Table\QueryCondition.cpp" />
@@ -155,8 +156,10 @@
     <ClInclude Include="src\Constants.h" />
     <ClInclude Include="src\Database\Database.h" />
     <ClInclude Include="src\ErrorHandling.h" />
-    <ClInclude Include="src\Parser\ParseNode.h" />
+    <ClInclude Include="src\Parser\AST.h" />
+    <ClInclude Include="src\Parser\Lexer.h" />
     <ClInclude Include="src\Parser\Parser.h" />
+    <ClInclude Include="src\Parser\Token.h" />
     <ClInclude Include="src\Table\Column.h" />
     <ClInclude Include="src\Table\ColumnUpdate.h" />
     <ClInclude Include="src\Table\QueryCondition.h" />

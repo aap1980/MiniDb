@@ -1,7 +1,9 @@
 #include <iostream>
 #include "Console.h"
+#include "../Parser/Token.h"
+#include "../Parser/Lexer.h"
+#include "../Parser/AST.h"
 #include "../Parser/Parser.h"
-#include "../Parser/ParseNode.h"
 
 namespace MiniDb::Console {
 
@@ -50,10 +52,12 @@ namespace MiniDb::Console {
 		std::string query;
 		query = iss.str();
 
-		MiniDb::Parser::Parser parser(query);
 		try {
-			MiniDb::Parser::ParseNode parseTree = parser.parse();
-			std::cout << "Parsing successful.\n";
+			MiniDb::Parser::Lexer lexer(query);
+			MiniDb::Parser::Parser parser(lexer);
+			MiniDb::Parser::SelectStatement ast = parser.parseSelectStatement();
+			std::cout << "Parsed Statement (AST):" << std::endl;
+			ast.print();
 		}
 		catch (const std::exception& e) {
 			std::cout << "Error: " << e.what() << "\n";
