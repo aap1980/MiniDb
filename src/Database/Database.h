@@ -10,6 +10,7 @@ namespace MiniDb::Database {
 		std::unordered_map<std::string, MiniDb::Table::Table> tables;
 
 	public:
+		void createTable(const std::string& tableName, const std::vector<MiniDb::Table::Column>& columns);
 		bool loadAllTables();
 		MiniDb::Table::Table& getTable(const std::string& tableName);
 		void listTables() const;

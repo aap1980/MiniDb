@@ -14,6 +14,12 @@ int main() {
 
 	database.loadAllTables();
 
+	std::vector<MiniDb::Table::Column> columns;
+	columns.push_back({ "id", "int" });
+	columns.push_back({ "name", "string" });
+	columns.push_back({ "created_at", "date" });
+	database.createTable("Test", columns);
+
 	MiniDb::Table::Table& usersTable = database.getTable("Users");
 
 	usersTable.addRow({ "1", "user1" });

@@ -1,10 +1,22 @@
 #include <filesystem>
 #include <iostream>
+#include <stdexcept>
 #include "Database.h"
 #include "../Table/Table.h"
 #include "../Config/Config.h"
 
 namespace MiniDb::Database {
+
+	void Database::createTable(const std::string& tableName, const std::vector<MiniDb::Table::Column>& columns) {
+		if (tables.find(tableName) != tables.end()) {
+			throw std::runtime_error("Table '" + tableName + "' already exists.");
+		}
+
+		MiniDb::Table::Table table(tableName);
+		table.metadata.addColumns(columns);
+
+		tables.insert({ tableName, std::move(table) });
+	}
 
 	bool Database::loadAllTables() {
 		namespace fs = std::filesystem;

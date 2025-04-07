@@ -10,7 +10,6 @@ namespace MiniDb::Table {
 	class Table {
 	private:
 		std::string tableName;
-		MiniDb::Table::TableMetadata metadata;
 		std::string dataFile;
 		bool loadData(const std::string& dataFile);
 		bool writeRowToFile(const std::vector<std::string>& row) const;
@@ -18,6 +17,7 @@ namespace MiniDb::Table {
 		bool readDataFromFile(const std::string& filename, std::vector<std::vector<std::string>>& rows) const;
 	public:
 		Table(const std::string& tableName);
+		MiniDb::Table::TableMetadata metadata;
 		void addRow(const std::vector<std::string>& row);
 		void updateRow(const QueryCondition& condition, const std::vector<std::string>& newRow);
 		void deleteRow(const QueryCondition& condition);

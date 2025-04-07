@@ -77,4 +77,8 @@ namespace MiniDb::Table {
 		columns.push_back(column);
 	}
 
+	void TableMetadata::addColumns(const std::vector<Column>& newColumns) {
+		columns.insert(columns.end(), newColumns.begin(), newColumns.end());
+	}
+
 }

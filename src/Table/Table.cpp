@@ -12,7 +12,6 @@ namespace MiniDb::Table {
 		: tableName(tableName), metadata(tableName) {
 		std::string tablesPath = MiniDb::Config::Config::getInstance().getTablesPath();
 		dataFile = tablesPath + tableName + ".dat";
-		std::cout << "Successfully loaded table: " << tableName << "\n";
 	}
 
 	bool Table::readDataFromFile(const std::string& filename, std::vector<std::vector<std::string>>& rows) const {
