@@ -4,8 +4,9 @@
 #include "Table.h"
 #include "../Constants.h"
 #include "../Config/Config.h"
-#include "TableMetadata.h"
 #include "../ErrorHandling.h"
+#include "TableMetadata.h"
+#include "ColumnUpdate.h"
 
 namespace MiniDb::Table {
 
@@ -59,7 +60,7 @@ namespace MiniDb::Table {
 		}
 	}
 
-	void Table::updateRow(const QueryCondition& condition, const std::vector<std::string>& newRow) {
+	void Table::updateRow(const QueryCondition& condition, const std::vector<MiniDb::Table::ColumnUpdate>& columns) {
 		std::vector<std::vector<std::string>> rows;
 		if (!readDataFromFile(dataFile, rows)) {
 			return;
@@ -72,6 +73,7 @@ namespace MiniDb::Table {
 			const auto& conditions = condition.getConditions();
 			size_t colIndex = 0;
 
+			// Sprawdzanie, czy warunki w QueryCondition pasuj¹ do wiersza
 			for (const auto& [column, value] : conditions) {
 				auto matchLambda = [&row, &column, &value, &colIndex, this](bool& match) {
 					if (metadata.columns[colIndex].name == column && row[colIndex] != value) {
@@ -83,10 +85,21 @@ namespace MiniDb::Table {
 				++colIndex;
 			}
 
+			// Aktualizacja odpowiednich kolumn na podstawie ColumnUpdate
 			if (match) {
-				for (size_t i = 0; i < newRow.size(); ++i) {
-					row[i] = newRow[i];
+
+				for (const auto& columnUpdate : columns) {
+					const std::string& columnName = columnUpdate.getName();
+					const std::string& newValue = columnUpdate.getValue();
+
+					for (size_t i = 0; i < metadata.columns.size(); ++i) {
+						if (metadata.columns[i].name == columnName) {
+							row[i] = newValue;
+							break;
+						}
+					}
 				}
+
 				found = true;
 				break;
 			}
