@@ -7,6 +7,11 @@
 
 namespace MiniDb::Database {
 
+	Database& Database::getInstance() {
+		static Database instance;
+		return instance;
+	}
+
 	void Database::createTable(const std::string& tableName, const std::vector<MiniDb::Table::Column>& columns) {
 		if (tables.find(tableName) != tables.end()) {
 			throw std::runtime_error("Table '" + tableName + "' already exists.");

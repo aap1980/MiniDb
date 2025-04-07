@@ -7,7 +7,6 @@ namespace MiniDb::Config {
 	private:
 		std::string tablesPath;
 		Config() = default;
-
     public:
 		static Config& getInstance();
         bool loadConfig(const std::string& filename);

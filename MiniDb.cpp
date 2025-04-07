@@ -13,7 +13,7 @@ int main() {
 
 	MiniDb::Config::Config::getInstance().loadConfig("config.ini");
 
-	MiniDb::Database::Database database;
+	MiniDb::Database::Database& database = MiniDb::Database::Database::getInstance();
 
 	database.loadAllTables();
 
