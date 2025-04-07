@@ -32,7 +32,7 @@ namespace MiniDb::Console {
 			MiniDb::Parser::SelectStatement ast = parser.parseSelectStatement();
 			std::cout << "Parsed Statement (AST):" << std::endl;
 			ast.print();
-			MiniDb::Executor::SelectExecutor selectExecutor(MiniDb::Database::Database::getInstance());
+			//MiniDb::Executor::SelectExecutor selectExecutor(MiniDb::Database::Database::getInstance());
 		}
 		catch (const std::exception& e) {
 			std::cout << "Error: " << e.what() << "\n";
