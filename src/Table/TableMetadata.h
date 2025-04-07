@@ -9,11 +9,11 @@ namespace MiniDb::Table {
 	private:
 		std::string tableName;
 		std::string filename;
-		void loadFromFile();
-		void saveToFile();
 	public:
 		TableMetadata(const std::string tableName);
 		std::vector<MiniDb::Table::Column> columns;
+		void loadFromFile();
+		void saveToFile();
 		void addColumn(const MiniDb::Table::Column column);
 		void addColumns(const std::vector<Column>& newColumns);
 	};

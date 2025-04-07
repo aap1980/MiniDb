@@ -5,6 +5,7 @@
 #include "../Constants.h"
 #include "../Config/Config.h"
 #include "TableMetadata.h"
+#include "../ErrorHandling.h"
 
 namespace MiniDb::Table {
 
@@ -36,6 +37,16 @@ namespace MiniDb::Table {
 		file.close();
 		return true;
 	}
+
+	void Table::saveToFile() {
+		std::ofstream file(dataFile);
+		if (!file.is_open()) {
+			throw FileWriteException("Error opening data file: " + dataFile);
+		}
+
+		file.close();
+	}
+
 
 	void Table::addRow(const std::vector<std::string>& row) {
 		if (row.size() != metadata.columns.size()) {
@@ -147,22 +158,26 @@ namespace MiniDb::Table {
 		return true;
 	}
 
-	bool Table::saveDataToFile(const std::string& filename, const std::vector<std::vector<std::string>>& rows) const {
+	void Table::saveDataToFile(const std::string& filename, const std::vector<std::vector<std::string>>& rows) const {
 		std::ofstream file(filename, std::ios::trunc);
 		if (!file.is_open()) {
-			std::cerr << "Error opening file: " << filename << std::endl;
-			return false;
+			throw FileWriteException("Error opening file: " + filename);
 		}
 
-		for (const auto& row : rows) {
-			for (const auto& data : row) {
-				file << data << static_cast<char>(MiniDb::SEP);
+		try {
+			for (const auto& row : rows) {
+				for (const auto& data : row) {
+					file << data << static_cast<char>(MiniDb::SEP);
+				}
+				file << '\n';
 			}
-			file << '\n';
+		}
+		catch (const std::exception& e) {
+			file.close();
+			throw FileWriteException("Error writing to file: " + filename + " - " + e.what());
 		}
 
 		file.close();
-		return true;
 	}
 
 	void Table::selectAll() const {

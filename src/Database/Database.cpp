@@ -14,8 +14,10 @@ namespace MiniDb::Database {
 
 		MiniDb::Table::Table table(tableName);
 		table.metadata.addColumns(columns);
+		table.metadata.saveToFile();
+		table.saveToFile();
 
-		tables.insert({ tableName, std::move(table) });
+		tables.emplace(tableName, std::move(table));
 	}
 
 	bool Database::loadAllTables() {
@@ -25,6 +27,7 @@ namespace MiniDb::Database {
 			if (entry.path().extension() == ".md") {
 				std::string tableName = entry.path().stem().string();
 				MiniDb::Table::Table table(tableName);
+				table.metadata.loadFromFile();
 				tables.emplace(tableName, std::move(table));
 				std::cout << "Successfully loaded table: " << tableName << "\n";
 			}

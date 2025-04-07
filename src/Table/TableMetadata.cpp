@@ -11,7 +11,6 @@ namespace MiniDb::Table {
 		: tableName(tableName) {
 		std::string tablesPath = MiniDb::Config::Config::getInstance().getTablesPath();
 		filename = tablesPath + tableName + ".md";
-		loadFromFile();
 	}
 
 	void TableMetadata::loadFromFile() {
