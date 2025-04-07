@@ -8,7 +8,6 @@ namespace MiniDb::Parser {
 
 	class Parser {
 	public:
-		// Konstruktor przyjmuj¹cy referencjê do leksera
 		explicit Parser(Lexer& lexer);
 
 		// G³ówna funkcja parsowania - próbuje sparsowaæ zapytanie SELECT
@@ -18,9 +17,9 @@ namespace MiniDb::Parser {
 
 	private:
 		// Przechowuje referencjê do leksera dostarczaj¹cego tokeny
-		Lexer& m_lexer;
+		Lexer& lexer;
 		// Przechowuje bie¿¹cy token pobrany z leksera
-		Token m_currentToken;
+		Token currentToken;
 
 		// Pobiera kolejny token z leksera i zapisuje w m_currentToken
 		void nextToken();
@@ -30,10 +29,10 @@ namespace MiniDb::Parser {
 		// Jeœli nie, rzuca wyj¹tek.
 		void consume(TokenType expectedType);
 
-		// Parsuje listê kolumn (np. "id, first_name, last_name")
+		// Parsuje listê kolumn
 		std::vector<std::string> parseColumnList();
 
-		// Parsuje klauzulê WHERE (np. "WHERE id = 1")
+		// Parsuje klauzulê WHERE
 		SimpleWhereClause parseWhereClause();
 	};
 

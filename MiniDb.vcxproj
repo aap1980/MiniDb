@@ -134,6 +134,7 @@
     <ClCompile Include="src\Config\Config.cpp" />
     <ClCompile Include="src\Console\Console.cpp" />
     <ClCompile Include="src\Database\Database.cpp" />
+    <ClCompile Include="src\Parser\AST.cpp" />
     <ClCompile Include="src\Parser\Lexer.cpp" />
     <ClCompile Include="src\Parser\Parser.cpp" />
     <ClCompile Include="src\Parser\Token.cpp" />

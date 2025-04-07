@@ -3,23 +3,22 @@
 
 namespace MiniDb::Parser {
 
-	Parser::Parser(Lexer& lexer) : m_lexer(lexer) {
-		// Pobierz pierwszy token od razu
+	Parser::Parser(Lexer& lexer) : lexer(lexer) {
 		nextToken();
 	}
 
 	void Parser::nextToken() {
-		m_currentToken = m_lexer.nextToken();
+		currentToken = lexer.nextToken();
 	}
 
 	void Parser::consume(TokenType expectedType) {
-		if (m_currentToken.type == expectedType) {
-			nextToken(); // Pobierz nastêpny token
+		if (currentToken.type == expectedType) {
+			nextToken();
 		}
 		else {
 			std::string errorMsg = "Parser Error: Expected token " + tokenTypeToString(expectedType) +
-				" but got " + tokenTypeToString(m_currentToken.type) +
-				" ('" + m_currentToken.value + "')";
+				" but got " + tokenTypeToString(currentToken.type) +
+				" ('" + currentToken.value + "')";
 			throw std::runtime_error(errorMsg);
 		}
 	}
@@ -37,26 +36,26 @@ namespace MiniDb::Parser {
 		consume(TokenType::FROM_KEYWORD);
 
 		// Oczekujemy identyfikatora tabeli
-		if (m_currentToken.type != TokenType::IDENTIFIER) {
+		if (currentToken.type != TokenType::IDENTIFIER) {
 			throw std::runtime_error("Parser Error: Expected table name (IDENTIFIER) after FROM, but got " +
-				tokenTypeToString(m_currentToken.type));
+				tokenTypeToString(currentToken.type));
 		}
-		stmt.fromTable = m_currentToken.value;
-		consume(TokenType::IDENTIFIER); // Skonsumuj nazwê tabeli
+		stmt.fromTable = currentToken.value;
+		consume(TokenType::IDENTIFIER);
 
 		// SprawdŸ, czy jest opcjonalna klauzula WHERE
-		if (m_currentToken.type == TokenType::WHERE_KEYWORD) {
+		if (currentToken.type == TokenType::WHERE_KEYWORD) {
 			stmt.whereCondition = parseWhereClause();
 		}
 
 		// Oczekujemy ';' na koñcu (lub EOF)
-		if (m_currentToken.type == TokenType::SEMICOLON) {
+		if (currentToken.type == TokenType::SEMICOLON) {
 			consume(TokenType::SEMICOLON);
 		}
 		// Akceptujemy te¿ brak œrednika jeœli to koniec wejœcia
-		else if (m_currentToken.type != TokenType::END_OF_FILE) {
+		else if (currentToken.type != TokenType::END_OF_FILE) {
 			throw std::runtime_error("Parser Error: Expected SEMICOLON or END_OF_FILE at the end of statement, but got " +
-				tokenTypeToString(m_currentToken.type));
+				tokenTypeToString(currentToken.type));
 		}
 
 
@@ -67,21 +66,21 @@ namespace MiniDb::Parser {
 		std::vector<std::string> columns;
 
 		// Oczekujemy przynajmniej jednego identyfikatora
-		if (m_currentToken.type != TokenType::IDENTIFIER) {
+		if (currentToken.type != TokenType::IDENTIFIER) {
 			throw std::runtime_error("Parser Error: Expected column name (IDENTIFIER) after SELECT, but got " +
-				tokenTypeToString(m_currentToken.type));
+				tokenTypeToString(currentToken.type));
 		}
-		columns.push_back(m_currentToken.value);
+		columns.push_back(currentToken.value);
 		consume(TokenType::IDENTIFIER);
 
 		// Dopóki napotykamy przecinki, parsuj kolejne identyfikatory
-		while (m_currentToken.type == TokenType::COMMA) {
-			consume(TokenType::COMMA); // Skonsumuj przecinek
-			if (m_currentToken.type != TokenType::IDENTIFIER) {
+		while (currentToken.type == TokenType::COMMA) {
+			consume(TokenType::COMMA);
+			if (currentToken.type != TokenType::IDENTIFIER) {
 				throw std::runtime_error("Parser Error: Expected column name (IDENTIFIER) after comma, but got " +
-					tokenTypeToString(m_currentToken.type));
+					tokenTypeToString(currentToken.type));
 			}
-			columns.push_back(m_currentToken.value);
+			columns.push_back(currentToken.value);
 			consume(TokenType::IDENTIFIER);
 		}
 
@@ -89,50 +88,35 @@ namespace MiniDb::Parser {
 	}
 
 	SimpleWhereClause Parser::parseWhereClause() {
-		consume(TokenType::WHERE_KEYWORD); // Skonsumuj 'WHERE'
+		consume(TokenType::WHERE_KEYWORD);
 
 		SimpleWhereClause condition;
 
 		// Oczekujemy identyfikatora (lewa strona warunku)
-		if (m_currentToken.type != TokenType::IDENTIFIER) {
+		if (currentToken.type != TokenType::IDENTIFIER) {
 			throw std::runtime_error("Parser Error: Expected column name (IDENTIFIER) after WHERE, but got " +
-				tokenTypeToString(m_currentToken.type));
+				tokenTypeToString(currentToken.type));
 		}
-		condition.columnName = m_currentToken.value;
+		condition.columnName = currentToken.value;
 		consume(TokenType::IDENTIFIER);
 
 		// Oczekujemy operatora '=' (na razie tylko ten)
-		if (m_currentToken.type != TokenType::EQUAL_OPERATOR) {
+		if (currentToken.type != TokenType::EQUAL_OPERATOR) {
 			throw std::runtime_error("Parser Error: Expected EQUAL_OPERATOR (=) in WHERE clause, but got " +
-				tokenTypeToString(m_currentToken.type));
+				tokenTypeToString(currentToken.type));
 		}
-		condition.op = m_currentToken.value;
+		condition.op = currentToken.value;
 		consume(TokenType::EQUAL_OPERATOR);
 
 		// Oczekujemy litera³u (na razie tylko INTEGER)
-		if (m_currentToken.type != TokenType::INTEGER_LITERAL) {
+		if (currentToken.type != TokenType::INTEGER_LITERAL) {
 			throw std::runtime_error("Parser Error: Expected INTEGER_LITERAL in WHERE clause after '=', but got " +
-				tokenTypeToString(m_currentToken.type));
+				tokenTypeToString(currentToken.type));
 		}
-		condition.literalValue = m_currentToken.value;
+		condition.literalValue = currentToken.value;
 		consume(TokenType::INTEGER_LITERAL);
 
 		return condition;
-	}
-
-	// Implementacja metody pomocniczej print dla AST
-#include <iostream>
-	void SelectStatement::print() const {
-		std::cout << "SELECT ";
-		for (size_t i = 0; i < columns.size(); ++i) {
-			std::cout << columns[i] << (i == columns.size() - 1 ? "" : ", ");
-		}
-		std::cout << "\nFROM " << fromTable;
-		if (whereCondition) {
-			std::cout << "\nWHERE " << whereCondition->columnName << " "
-				<< whereCondition->op << " " << whereCondition->literalValue;
-		}
-		std::cout << ";" << std::endl;
 	}
 
 }

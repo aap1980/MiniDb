@@ -5,16 +5,16 @@
 
 namespace MiniDb::Parser {
 
-	Lexer::Lexer(const std::string& input) : m_input(input), m_position(0) {}
+	Lexer::Lexer(const std::string& input) : statement(input), currentPosition(0) {}
 
 	Token Lexer::nextToken() {
 		skipWhitespace();
 
-		if (m_position >= m_input.length()) {
+		if (currentPosition >= statement.length()) {
 			return Token(TokenType::END_OF_FILE, "");
 		}
 
-		char currentChar = peek();
+		char currentChar = peekChar();
 
 		// Identyfikatory i s³owa kluczowe
 		if (isalpha(currentChar) || currentChar == '_') {
@@ -29,19 +29,19 @@ namespace MiniDb::Parser {
 		// Operatory i separatory
 		switch (currentChar) {
 		case ',':
-			advance();
+			incrementPosition();
 			return Token(TokenType::COMMA, ",");
 		case '=':
-			advance();
+			incrementPosition();
 			return Token(TokenType::EQUAL_OPERATOR, "=");
 		case ';':
-			advance();
+			incrementPosition();
 			return Token(TokenType::SEMICOLON, ";");
 			// Mo¿na dodaæ obs³ugê innych znaków jak '(', ')', '*', '<', '>' itd.
 		}
 
 		// Jeœli nic nie pasuje
-		advance();
+		incrementPosition();
 		return Token(TokenType::UNKNOWN, std::string(1, currentChar));
 	}
 
@@ -56,17 +56,17 @@ namespace MiniDb::Parser {
 	}
 
 	void Lexer::skipWhitespace() {
-		while (m_position < m_input.length() && isspace(peek())) {
-			advance();
+		while (currentPosition < statement.length() && isspace(peekChar())) {
+			incrementPosition();
 		}
 	}
 
 	Token Lexer::readIdentifierOrKeyword() {
-		size_t startPos = m_position;
-		while (m_position < m_input.length() && (isalnum(peek()) || peek() == '_')) {
-			advance();
+		size_t startPos = currentPosition;
+		while (currentPosition < statement.length() && (isalnum(peekChar()) || peekChar() == '_')) {
+			incrementPosition();
 		}
-		std::string value = m_input.substr(startPos, m_position - startPos);
+		std::string value = statement.substr(startPos, currentPosition - startPos);
 
 		// SprawdŸ, czy to s³owo kluczowe (ignoruj¹c wielkoœæ liter)
 		std::string lowerValue = value;
@@ -80,24 +80,24 @@ namespace MiniDb::Parser {
 	}
 
 	Token Lexer::readIntegerLiteral() {
-		size_t startPos = m_position;
-		while (m_position < m_input.length() && isdigit(peek())) {
-			advance();
+		size_t startPos = currentPosition;
+		while (currentPosition < statement.length() && isdigit(peekChar())) {
+			incrementPosition();
 		}
-		std::string value = m_input.substr(startPos, m_position - startPos);
+		std::string value = statement.substr(startPos, currentPosition - startPos);
 		return Token(TokenType::INTEGER_LITERAL, value);
 	}
 
-	char Lexer::peek() const {
-		if (m_position >= m_input.length()) {
+	char Lexer::peekChar() const {
+		if (currentPosition >= statement.length()) {
 			return '\0'; // Koniec pliku
 		}
-		return m_input[m_position];
+		return statement[currentPosition];
 	}
 
-	void Lexer::advance() {
-		if (m_position < m_input.length()) {
-			m_position++;
+	void Lexer::incrementPosition() {
+		if (currentPosition < statement.length()) {
+			currentPosition++;
 		}
 	}
 
