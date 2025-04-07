@@ -37,7 +37,8 @@ namespace MiniDb::Parser {
 		case ';':
 			incrementPosition();
 			return Token(TokenType::SEMICOLON, ";");
-			// Mo¿na dodaæ obs³ugê innych znaków jak '(', ')', '*', '<', '>' itd.
+		case '\'':
+			return readStringLiteral();
 		}
 
 		// Jeœli nic nie pasuje
@@ -73,8 +74,9 @@ namespace MiniDb::Parser {
 		std::transform(lowerValue.begin(), lowerValue.end(), lowerValue.begin(), ::tolower);
 
 		if (lowerValue == "select") return Token(TokenType::SELECT_KEYWORD, value);
-		if (lowerValue == "from")   return Token(TokenType::FROM_KEYWORD, value);
-		if (lowerValue == "where")  return Token(TokenType::WHERE_KEYWORD, value);
+		if (lowerValue == "from") return Token(TokenType::FROM_KEYWORD, value);
+		if (lowerValue == "where") return Token(TokenType::WHERE_KEYWORD, value);
+		if (lowerValue == "and") return Token(TokenType::AND_KEYWORD, value);
 
 		return Token(TokenType::IDENTIFIER, value);
 	}
@@ -86,6 +88,24 @@ namespace MiniDb::Parser {
 		}
 		std::string value = statement.substr(startPos, currentPosition - startPos);
 		return Token(TokenType::INTEGER_LITERAL, value);
+	}
+
+	Token Lexer::readStringLiteral() {
+		incrementPosition();
+		size_t startPos = currentPosition;
+		while (currentPosition < statement.length() && peekChar() != '\'') {
+			incrementPosition();
+		}
+		std::string value = statement.substr(startPos, currentPosition - startPos);
+
+		// Pomiñ koñcowy apostrof
+		if (peekChar() == '\'') {
+			incrementPosition(); 
+			return Token(TokenType::STRING_LITERAL, value);
+		}
+		else {
+			return Token(TokenType::UNKNOWN, "'" + value); // Lub rzuæ wyj¹tek
+		}
 	}
 
 	char Lexer::peekChar() const {

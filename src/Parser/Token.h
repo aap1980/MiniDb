@@ -11,11 +11,12 @@ namespace MiniDb::Parser {
         WHERE_KEYWORD,
         IDENTIFIER,       // np. nazwa kolumny, nazwa tabeli
         INTEGER_LITERAL,  // np. 1, 123
-        // STRING_LITERAL, // Do dodania w przysz³oœci
+        STRING_LITERAL,   // np. 'jakiœ tekst'
         COMMA,            // ,
         EQUAL_OPERATOR,   // =
+        AND_KEYWORD,      // AND
         SEMICOLON,        // ;
-        END_OF_FILE,      // Koniec wejœcia
+        END_OF_FILE,      // Koniec pliku
         UNKNOWN           // Nierozpoznany token
     };
 

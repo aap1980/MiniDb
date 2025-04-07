@@ -10,6 +10,7 @@ namespace MiniDb::Parser {
 		void skipWhitespace();
 		Token readIdentifierOrKeyword();
 		Token readIntegerLiteral();
+		Token readStringLiteral();
 		char peekChar() const;
 		void incrementPosition();
 		const std::string& statement;
