@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <sstream>
 #include "Table.h"
@@ -193,6 +194,13 @@ namespace MiniDb::Table {
 		file.close();
 	}
 
+	std::string shortenText(const std::string& text) {
+		if (text.length() > TEXT_DISPLAY_LIMIT) {
+			return text.substr(0, TEXT_DISPLAY_LIMIT) + "..";
+		}
+		return text;
+	}
+
 	void Table::selectAll() const {
 		std::ifstream file(dataFile);
 		if (!file.is_open()) {
@@ -200,6 +208,7 @@ namespace MiniDb::Table {
 			return;
 		}
 
+		std::vector<std::vector<std::string>> rows;
 		std::string line;
 		while (std::getline(file, line)) {
 			std::vector<std::string> row;
@@ -209,8 +218,12 @@ namespace MiniDb::Table {
 				line.erase(0, pos + 1);
 			}
 			row.push_back(line);
+			rows.push_back(row);
+		}
+
+		for (const auto& row : rows) {
 			for (const auto& data : row) {
-				std::cout << data << "\t";
+				std::cout << std::setw(TEXT_DISPLAY_LIMIT) << shortenText(data) << "  ";
 			}
 			std::cout << "\n";
 		}
@@ -220,10 +233,12 @@ namespace MiniDb::Table {
 
 	void Table::printTable() const {
 		std::cout << "Tabela: " << tableName << "\n";
+
 		for (const auto& column : metadata.columns) {
-			std::cout << column.name << "\t";
+			std::cout << std::setw(TEXT_DISPLAY_LIMIT) << shortenText(column.name) << "  ";
 		}
 		std::cout << "\n";
+
 		selectAll();
 	}
 

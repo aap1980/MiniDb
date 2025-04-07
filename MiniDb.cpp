@@ -37,7 +37,8 @@ int main() {
 	updateCondition.addCondition("id", "2");
 	std::vector<MiniDb::Table::ColumnUpdate> updateRow = {
 		MiniDb::Table::ColumnUpdate("first_name", "John"),
-		MiniDb::Table::ColumnUpdate("last_name", "Doe")
+		MiniDb::Table::ColumnUpdate("last_name", "Doe"),
+		MiniDb::Table::ColumnUpdate("updateed_at", MiniDb::Utils::DateTimeUtils::getCurrentDatetimeAsString())
 	};
 	usersTable.updateRow(updateCondition, updateRow);
 	usersTable.printTable();
