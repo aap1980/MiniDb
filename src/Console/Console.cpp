@@ -1,5 +1,7 @@
 #include <iostream>
 #include "Console.h"
+#include "../Parser/Parser.h"
+#include "../Parser/ParseNode.h"
 
 namespace MiniDb::Console {
 
@@ -44,7 +46,18 @@ namespace MiniDb::Console {
 
 	void Console::handleSelect(std::istringstream& iss) {
 		std::cout << "Handling SELECT query...\n";
-		// Tuta logika obs³ugi zapytania SELECT
+
+		std::string query;
+		query = iss.str();
+
+		MiniDb::Parser::Parser parser(query);
+		try {
+			MiniDb::Parser::ParseNode parseTree = parser.parse();
+			std::cout << "Parsing successful.\n";
+		}
+		catch (const std::exception& e) {
+			std::cout << "Error: " << e.what() << "\n";
+		}
 	}
 
 	void Console::handleInsert(std::istringstream& iss) {
