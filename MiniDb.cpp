@@ -6,6 +6,7 @@
 #include "src/Table/QueryCondition.h"
 #include "src/Table/ColumnUpdate.h"
 #include "src/Utils/DateTimeUtils.h"
+#include "src/Console/Console.h"
 
 int main() {
 	std::filesystem::path current_path = std::filesystem::current_path();
@@ -16,7 +17,7 @@ int main() {
 
 	database.loadAllTables();
 
-	std::vector<MiniDb::Table::Column> columns;
+	/*std::vector<MiniDb::Table::Column> columns;
 	columns.push_back({ "id", "int" });
 	columns.push_back({ "login", "string" });
 	columns.push_back({ "first_name", "string" });
@@ -48,7 +49,11 @@ int main() {
 	deleteCondition.addCondition("id", "1");
 	usersTable.deleteRow(deleteCondition);
 	usersTable.printTable();
-	std::cout << "\n";
+	std::cout << "\n";*/
+
+	MiniDb::Console::Console console;
+
+	console.run();
 
 	return 0;
 }

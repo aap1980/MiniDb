@@ -132,6 +132,7 @@
   <ItemGroup>
     <ClCompile Include="MiniDb.cpp" />
     <ClCompile Include="src\Config\Config.cpp" />
+    <ClCompile Include="src\Console\Console.cpp" />
     <ClCompile Include="src\Database\Database.cpp" />
     <ClCompile Include="src\Table\Column.cpp" />
     <ClCompile Include="src\Table\ColumnUpdate.cpp" />
@@ -148,6 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Config\Config.h" />
+    <ClInclude Include="src\Console\Console.h" />
     <ClInclude Include="src\Constants.h" />
     <ClInclude Include="src\Database\Database.h" />
     <ClInclude Include="src\ErrorHandling.h" />
