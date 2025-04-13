@@ -5,7 +5,7 @@ namespace MiniDb::Executor {
 
     SelectExecutor::SelectExecutor(MiniDb::Database::Database& database) : database(database) {}
 
-    std::vector<std::vector<std::string>> SelectExecutor::execute(const MiniDb::Parser::SelectStatement& statement) {
+    /*std::vector<std::vector<std::string>> SelectExecutor::execute(const MiniDb::Parser::SelectStatement& statement) {
         try {
             auto& table = database.getTable(statement.fromTable);
 
@@ -24,6 +24,6 @@ namespace MiniDb::Executor {
         }
 
         return {};
-    }
+    }*/
 
 }

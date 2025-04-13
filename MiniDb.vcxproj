@@ -102,10 +102,9 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)SqlParser\src;$(ProjectDir)SqlParser\src\parser;$(ProjectDir)SqlParser\src\sql;$(ProjectDir)SqlParser\src\util</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -135,10 +134,9 @@
     <ClCompile Include="src\Console\Console.cpp" />
     <ClCompile Include="src\Database\Database.cpp" />
     <ClCompile Include="src\Executors\SelectExecutor.cpp" />
-    <ClCompile Include="src\Parser\AST.cpp" />
-    <ClCompile Include="src\Parser\Lexer.cpp" />
-    <ClCompile Include="src\Parser\Parser.cpp" />
-    <ClCompile Include="src\Parser\Token.cpp" />
+    <ClCompile Include="src\SqlParser\parser\bison_parser.cpp" />
+    <ClCompile Include="src\SqlParser\SQLParser.cpp" />
+    <ClCompile Include="src\SqlParser\SQLParserResult.cpp" />
     <ClCompile Include="src\Table\Column.cpp" />
     <ClCompile Include="src\Table\ColumnUpdate.cpp" />
     <ClCompile Include="src\Table\QueryCondition.cpp" />
@@ -159,10 +157,10 @@
     <ClInclude Include="src\Database\Database.h" />
     <ClInclude Include="src\ErrorHandling.h" />
     <ClInclude Include="src\Executors\SelectExecutor.h" />
-    <ClInclude Include="src\Parser\AST.h" />
-    <ClInclude Include="src\Parser\Lexer.h" />
-    <ClInclude Include="src\Parser\Parser.h" />
-    <ClInclude Include="src\Parser\Token.h" />
+    <ClInclude Include="src\SqlParser\parser\bison_parser.h" />
+    <ClInclude Include="src\SqlParser\PlatformCompatibility.h" />
+    <ClInclude Include="src\SqlParser\SQLParser.h" />
+    <ClInclude Include="src\SqlParser\SQLParserResult.h" />
     <ClInclude Include="src\Table\Column.h" />
     <ClInclude Include="src\Table\ColumnUpdate.h" />
     <ClInclude Include="src\Table\QueryCondition.h" />

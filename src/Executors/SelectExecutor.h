@@ -2,7 +2,6 @@
 #include <vector>
 #include <string>
 #include "../Database/Database.h"
-#include "../Parser/AST.h"
 
 namespace MiniDb::Executor {
 
@@ -12,7 +11,7 @@ namespace MiniDb::Executor {
 
     public:
         explicit SelectExecutor(MiniDb::Database::Database& database);
-        std::vector<std::vector<std::string>> execute(const MiniDb::Parser::SelectStatement& statement);
+        //std::vector<std::vector<std::string>> execute(const MiniDb::Parser::SelectStatement& statement);
     };
 
 }

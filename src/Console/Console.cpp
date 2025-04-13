@@ -1,10 +1,8 @@
 #include <iostream>
 #include "Console.h"
-#include "../Parser/Token.h"
-#include "../Parser/Lexer.h"
-#include "../Parser/AST.h"
-#include "../Parser/Parser.h"
 #include "../Executors/SelectExecutor.h"
+#include "../SqlParser/SQLParser.h"
+#include "../SqlParser/SQLParserResult.h"
 
 namespace MiniDb::Console {
 
@@ -26,17 +24,8 @@ namespace MiniDb::Console {
 	}
 
 	void Console::parseCommand(const std::string& command) {
-		try {
-			MiniDb::Parser::Lexer lexer(command);
-			MiniDb::Parser::Parser parser(lexer);
-			MiniDb::Parser::SelectStatement ast = parser.parseSelectStatement();
-			std::cout << "Parsed Statement (AST):" << std::endl;
-			ast.print();
-			//MiniDb::Executor::SelectExecutor selectExecutor(MiniDb::Database::Database::getInstance());
-		}
-		catch (const std::exception& e) {
-			std::cout << "Error: " << e.what() << "\n";
-		}
+		hsql::SQLParserResult result;
+		hsql::SQLParser::parse(command, &result);
 	}
 
 }
