@@ -3,6 +3,7 @@
 #include "../Executors/SelectExecutor.h"
 #include "../SqlParser/SQLParser.h"
 #include "../SqlParser/SQLParserResult.h"
+#include "../SqlParser/util/sqlhelper.h"
 
 namespace MiniDb::Console {
 
@@ -26,6 +27,23 @@ namespace MiniDb::Console {
 	void Console::parseCommand(const std::string& command) {
 		hsql::SQLParserResult result;
 		hsql::SQLParser::parse(command, &result);
+
+		if (result.isValid()) {
+			printf("Parsed successfully!\n");
+			printf("Number of statements: %lu\n", result.size());
+
+			for (auto i = 0u; i < result.size(); ++i) {
+				// Print a statement summary.
+				hsql::printStatementInfo(result.getStatement(i));
+			}
+		}
+		else {
+			fprintf(stderr, "Given string is not a valid SQL query.\n");
+			fprintf(stderr, "%s (L%d:%d)\n",
+				result.errorMsg(),
+				result.errorLine(),
+				result.errorColumn());
+		}
 	}
 
 }

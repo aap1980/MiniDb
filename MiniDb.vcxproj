@@ -135,8 +135,15 @@
     <ClCompile Include="src\Database\Database.cpp" />
     <ClCompile Include="src\Executors\SelectExecutor.cpp" />
     <ClCompile Include="src\SqlParser\parser\bison_parser.cpp" />
+    <ClCompile Include="src\SqlParser\parser\flex_lexer.cpp" />
     <ClCompile Include="src\SqlParser\SQLParser.cpp" />
     <ClCompile Include="src\SqlParser\SQLParserResult.cpp" />
+    <ClCompile Include="src\SqlParser\sql\CreateStatement.cpp" />
+    <ClCompile Include="src\SqlParser\sql\Expr.cpp" />
+    <ClCompile Include="src\SqlParser\sql\PrepareStatement.cpp" />
+    <ClCompile Include="src\SqlParser\sql\SQLStatement.cpp" />
+    <ClCompile Include="src\SqlParser\sql\statements.cpp" />
+    <ClCompile Include="src\SqlParser\util\sqlhelper.cpp" />
     <ClCompile Include="src\Table\Column.cpp" />
     <ClCompile Include="src\Table\ColumnUpdate.cpp" />
     <ClCompile Include="src\Table\QueryCondition.cpp" />
@@ -158,9 +165,31 @@
     <ClInclude Include="src\ErrorHandling.h" />
     <ClInclude Include="src\Executors\SelectExecutor.h" />
     <ClInclude Include="src\SqlParser\parser\bison_parser.h" />
+    <ClInclude Include="src\SqlParser\parser\flex_lexer.h" />
+    <ClInclude Include="src\SqlParser\parser\parser_typedef.h" />
     <ClInclude Include="src\SqlParser\PlatformCompatibility.h" />
     <ClInclude Include="src\SqlParser\SQLParser.h" />
     <ClInclude Include="src\SqlParser\SQLParserResult.h" />
+    <ClInclude Include="src\SqlParser\sql\AlterStatement.h" />
+    <ClInclude Include="src\SqlParser\sql\ColumnType.h" />
+    <ClInclude Include="src\SqlParser\sql\CreateStatement.h" />
+    <ClInclude Include="src\SqlParser\sql\DeleteStatement.h" />
+    <ClInclude Include="src\SqlParser\sql\DropStatement.h" />
+    <ClInclude Include="src\SqlParser\sql\ExecuteStatement.h" />
+    <ClInclude Include="src\SqlParser\sql\ExportStatement.h" />
+    <ClInclude Include="src\SqlParser\sql\Expr.h" />
+    <ClInclude Include="src\SqlParser\sql\ImportExportOptions.h" />
+    <ClInclude Include="src\SqlParser\sql\ImportStatement.h" />
+    <ClInclude Include="src\SqlParser\sql\InsertStatement.h" />
+    <ClInclude Include="src\SqlParser\sql\PrepareStatement.h" />
+    <ClInclude Include="src\SqlParser\sql\SelectStatement.h" />
+    <ClInclude Include="src\SqlParser\sql\ShowStatement.h" />
+    <ClInclude Include="src\SqlParser\sql\SQLStatement.h" />
+    <ClInclude Include="src\SqlParser\sql\statements.h" />
+    <ClInclude Include="src\SqlParser\sql\Table.h" />
+    <ClInclude Include="src\SqlParser\sql\TransactionStatement.h" />
+    <ClInclude Include="src\SqlParser\sql\UpdateStatement.h" />
+    <ClInclude Include="src\SqlParser\util\sqlhelper.h" />
     <ClInclude Include="src\Table\Column.h" />
     <ClInclude Include="src\Table\ColumnUpdate.h" />
     <ClInclude Include="src\Table\QueryCondition.h" />
@@ -168,6 +197,16 @@
     <ClInclude Include="src\Table\TableDataWriter.h" />
     <ClInclude Include="src\Table\TableMetadata.h" />
     <ClInclude Include="src\Utils\DateTimeUtils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\SqlParser\parser\.gitignore" />
+    <None Include="src\SqlParser\parser\bison_parser.y" />
+    <None Include="src\SqlParser\parser\flex_lexer.l" />
+    <None Include="src\SqlParser\parser\keywordlist_generator.py" />
+    <None Include="src\SqlParser\parser\Makefile" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\SqlParser\parser\sql_keywords.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
