@@ -10,10 +10,10 @@ namespace MiniDb::Config {
 		return instance;
 	}
 
-	bool Config::loadConfig(const std::string& filename) {
-		std::ifstream file(filename);
+	bool Config::loadConfig(const std::string& _filename) {
+		std::ifstream file(_filename);
 		if (!file.is_open()) {
-			std::cerr << "Error opening configuration file: " << filename << std::endl;
+			std::cerr << "Error opening configuration file: " << _filename << std::endl;
 			return false;
 		}
 

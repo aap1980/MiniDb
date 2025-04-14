@@ -7,22 +7,22 @@
 
 namespace MiniDb::Table {
 
-	TableMetadata::TableMetadata(const std::string tableName)
-		: tableName(tableName) {
+	void TableMetadata::initialize(const std::string tableName) {
 		std::string tablesPath = MiniDb::Config::Config::getInstance().getTablesPath();
-		filename = tablesPath + tableName + ".md";
+		_filename = tablesPath + tableName + ".md";
+		loadFromFile();
 	}
 
 	void TableMetadata::loadFromFile() {
-		std::ifstream file(filename);
+		std::ifstream file(_filename);
 		if (!file.is_open()) {
-			throw std::runtime_error("Unable to open file: " + filename);
+			throw std::runtime_error("Unable to open file: " + _filename);
 		}
 
 		std::string line;
 		while (std::getline(file, line)) {
 			if (line.find("Table") != std::string::npos) {
-				if (line.find(tableName) == std::string::npos) {
+				if (line.find(_tableName) == std::string::npos) {
 					continue;
 				}
 			}
@@ -57,12 +57,12 @@ namespace MiniDb::Table {
 	}
 
 	void TableMetadata::saveToFile() {
-		std::ofstream out(filename, std::ios::out | std::ios::trunc);
+		std::ofstream out(_filename, std::ios::out | std::ios::trunc);
 		if (!out.is_open()) {
-			throw std::runtime_error("Unable to open file: " + filename);
+			throw std::runtime_error("Unable to open file: " + _filename);
 		}
 
-		out << "Table" << SEP << "Name:" << tableName << "\n";
+		out << "Table" << SEP << "Name:" << _tableName << "\n";
 		for (const auto& col : columns) {
 			out << "Column" << SEP
 				<< "Name:" << col.name << SEP

@@ -7,16 +7,16 @@ namespace MiniDb::Table {
 
 	class TableMetadata {
 	private:
-		std::string tableName;
-		std::string filename;
-	public:
-		TableMetadata() = default;
-		TableMetadata(const std::string tableName);
-		std::vector<MiniDb::Table::Column> columns;
+		std::string _tableName;
+		std::string _filename;
 		void loadFromFile();
-		void saveToFile();
+	public:
+		std::vector<MiniDb::Table::Column> columns;
+		TableMetadata() = default;
+		void initialize(const std::string tableName);
 		void addColumn(const MiniDb::Table::Column column);
 		void addColumns(const std::vector<Column>& newColumns);
+		void saveToFile();
 	};
 
 }

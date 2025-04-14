@@ -28,6 +28,18 @@
     <Filter Include="SqlParser">
       <UniqueIdentifier>{490a4055-dc2d-47df-85df-f468dfa93422}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SqlParser\parser">
+      <UniqueIdentifier>{c665266a-9d04-4aa5-a822-36dbd6f30bac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SqlParser\util">
+      <UniqueIdentifier>{38574a16-244f-4b01-8805-467aa8e9449c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SqlParser\sql">
+      <UniqueIdentifier>{67ce6d9e-514a-418a-90f4-290c26cd8fe0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{3592f73b-bf83-45e2-ad38-fffc4ba57cb7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MiniDb.cpp">
@@ -36,34 +48,7 @@
     <ClCompile Include="src\Table\QueryCondition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Utils\DateTimeUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Executors\SelectExecutor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SqlParser\parser\bison_parser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SqlParser\parser\flex_lexer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SqlParser\sql\CreateStatement.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SqlParser\sql\Expr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SqlParser\sql\PrepareStatement.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SqlParser\sql\SQLStatement.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SqlParser\sql\statements.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SqlParser\util\sqlhelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Statement\SelectStatement.cpp">
@@ -108,6 +93,36 @@
     <ClCompile Include="src\SqlParser\SQLParserResult.cpp">
       <Filter>SqlParser</Filter>
     </ClCompile>
+    <ClCompile Include="src\SqlParser\parser\bison_parser.cpp">
+      <Filter>SqlParser\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SqlParser\parser\flex_lexer.cpp">
+      <Filter>SqlParser\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SqlParser\util\sqlhelper.cpp">
+      <Filter>SqlParser\util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SqlParser\sql\CreateStatement.cpp">
+      <Filter>SqlParser\sql</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SqlParser\sql\Expr.cpp">
+      <Filter>SqlParser\sql</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SqlParser\sql\PrepareStatement.cpp">
+      <Filter>SqlParser\sql</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SqlParser\sql\SQLStatement.cpp">
+      <Filter>SqlParser\sql</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SqlParser\sql\statements.cpp">
+      <Filter>SqlParser\sql</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils\DateTimeUtils.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Table\Columns.cpp">
+      <Filter>Table</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Table\TableDataWriter.h">
@@ -119,88 +134,13 @@
     <ClInclude Include="src\Table\QueryCondition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Table\TableMetadata.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\ErrorHandling.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Utils\DateTimeUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Executors\SelectExecutor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\SqlParser\parser\bison_parser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\parser\flex_lexer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\parser\parser_typedef.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\sql\AlterStatement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\sql\ColumnType.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\sql\CreateStatement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\sql\DeleteStatement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\sql\DropStatement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\sql\ExecuteStatement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\sql\ExportStatement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\sql\Expr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\sql\ImportExportOptions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\sql\ImportStatement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\sql\InsertStatement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\sql\PrepareStatement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\SqlParser\sql\SelectStatement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\sql\ShowStatement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\sql\SQLStatement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\sql\statements.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\sql\Table.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\sql\TransactionStatement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\sql\UpdateStatement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\util\sqlhelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Statement\SelectStatement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Statement\Statement.h">
@@ -239,18 +179,108 @@
     <ClInclude Include="src\Table\ColumnUpdate.h">
       <Filter>Table</Filter>
     </ClInclude>
+    <ClInclude Include="src\SqlParser\parser\bison_parser.h">
+      <Filter>SqlParser\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\parser\flex_lexer.h">
+      <Filter>SqlParser\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\parser\parser_typedef.h">
+      <Filter>SqlParser\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\util\sqlhelper.h">
+      <Filter>SqlParser\util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\sql\AlterStatement.h">
+      <Filter>SqlParser\sql</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\sql\ColumnType.h">
+      <Filter>SqlParser\sql</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\sql\CreateStatement.h">
+      <Filter>SqlParser\sql</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\sql\Table.h">
+      <Filter>SqlParser\sql</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\sql\DeleteStatement.h">
+      <Filter>SqlParser\sql</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\sql\DropStatement.h">
+      <Filter>SqlParser\sql</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\sql\ExecuteStatement.h">
+      <Filter>SqlParser\sql</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\sql\ExportStatement.h">
+      <Filter>SqlParser\sql</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\sql\Expr.h">
+      <Filter>SqlParser\sql</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\sql\ImportExportOptions.h">
+      <Filter>SqlParser\sql</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\sql\ImportStatement.h">
+      <Filter>SqlParser\sql</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\sql\InsertStatement.h">
+      <Filter>SqlParser\sql</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\sql\PrepareStatement.h">
+      <Filter>SqlParser\sql</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Statement\SelectStatement.h">
+      <Filter>SqlParser\sql</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\sql\ShowStatement.h">
+      <Filter>SqlParser\sql</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\sql\SQLStatement.h">
+      <Filter>SqlParser\sql</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\sql\statements.h">
+      <Filter>SqlParser\sql</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\sql\TransactionStatement.h">
+      <Filter>SqlParser\sql</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\sql\UpdateStatement.h">
+      <Filter>SqlParser\sql</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\DateTimeUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Table\TableMetadata.h">
+      <Filter>Table</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Table\Columns.h">
+      <Filter>Table</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="config.ini" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\SqlParser\parser\.gitignore" />
-    <None Include="src\SqlParser\parser\bison_parser.y" />
-    <None Include="src\SqlParser\parser\flex_lexer.l" />
-    <None Include="src\SqlParser\parser\keywordlist_generator.py" />
-    <None Include="src\SqlParser\parser\Makefile" />
+    <None Include="src\SqlParser\parser\bison_parser.y">
+      <Filter>SqlParser\parser</Filter>
+    </None>
+    <None Include="src\SqlParser\parser\flex_lexer.l">
+      <Filter>SqlParser\parser</Filter>
+    </None>
+    <None Include="src\SqlParser\parser\Makefile">
+      <Filter>SqlParser\parser</Filter>
+    </None>
+    <None Include="src\SqlParser\parser\keywordlist_generator.py">
+      <Filter>SqlParser\parser</Filter>
+    </None>
+    <None Include="src\SqlParser\parser\.gitignore">
+      <Filter>SqlParser\parser</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="src\SqlParser\parser\sql_keywords.txt" />
+    <Text Include="src\SqlParser\parser\sql_keywords.txt">
+      <Filter>SqlParser\parser</Filter>
+    </Text>
   </ItemGroup>
 </Project>

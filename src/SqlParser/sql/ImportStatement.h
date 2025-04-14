@@ -14,7 +14,7 @@ struct ImportStatement : SQLStatement {
   ImportType type;
   char* filePath;
   char* schema;
-  char* tableName;
+  char* _tableName;
   Expr* whereClause;
   char* encoding;
 };

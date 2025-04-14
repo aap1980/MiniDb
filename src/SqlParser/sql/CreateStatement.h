@@ -89,7 +89,7 @@ struct CreateStatement : SQLStatement {
   bool ifNotExists;                                 // default: false
   char* filePath;                                   // default: nullptr
   char* schema;                                     // default: nullptr
-  char* tableName;                                  // default: nullptr
+  char* _tableName;                                  // default: nullptr
   char* indexName;                                  // default: nullptr
   std::vector<char*>* indexColumns;                 // default: nullptr
   std::vector<ColumnDefinition*>* columns;          // default: nullptr

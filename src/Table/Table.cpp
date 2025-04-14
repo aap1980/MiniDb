@@ -13,16 +13,17 @@
 
 namespace MiniDb::Table {
 
-	Table::Table(const std::string& tableName)
-		: tableName(tableName), metadata(tableName), rows() {
+	Table::Table(const std::string& _tableName)
+		: _tableName(_tableName), metadata(), rows() {
 		std::string tablesPath = MiniDb::Config::Config::getInstance().getTablesPath();
-		dataFile = tablesPath + tableName + ".dat";
+		_dataFile = tablesPath + _tableName + ".dat";
+		metadata.initialize(_tableName);
 	}
 
-	bool Table::readDataFromFile(const std::string& filename, Rows& rows) const {
-		std::ifstream file(filename);
+	bool Table::readDataFromFile(const std::string& _filename, Rows& rows) const {
+		std::ifstream file(_filename);
 		if (!file.is_open()) {
-			std::cerr << "Error opening data file: " << filename << std::endl;
+			std::cerr << "Error opening data file: " << _filename << std::endl;
 			return false;
 		}
 
@@ -43,9 +44,9 @@ namespace MiniDb::Table {
 	}
 
 	void Table::saveToFile() {
-		std::ofstream file(dataFile);
+		std::ofstream file(_dataFile);
 		if (!file.is_open()) {
-			throw FileWriteException("Error opening data file: " + dataFile);
+			throw FileWriteException("Error opening data file: " + _dataFile);
 		}
 
 		for (const auto& row : rows.getRow()) {
@@ -166,9 +167,9 @@ namespace MiniDb::Table {
 	}*/
 
 	bool Table::writeRowToFile(const std::vector<std::string>& row) const {
-		std::ofstream file(dataFile, std::ios::app);
+		std::ofstream file(_dataFile, std::ios::app);
 		if (!file.is_open()) {
-			std::cerr << "Error opening file: " << dataFile << std::endl;
+			std::cerr << "Error opening file: " << _dataFile << std::endl;
 			return false;
 		}
 
@@ -189,9 +190,9 @@ namespace MiniDb::Table {
 	}
 
 	void Table::selectAll() const {
-		std::ifstream file(dataFile);
+		std::ifstream file(_dataFile);
 		if (!file.is_open()) {
-			std::cerr << "Error opening data file: " << dataFile << std::endl;
+			std::cerr << "Error opening data file: " << _dataFile << std::endl;
 			return;
 		}
 
@@ -219,7 +220,7 @@ namespace MiniDb::Table {
 	}
 
 	void Table::printTable() const {
-		std::cout << "Tabela: " << tableName << "\n";
+		std::cout << "Tabela: " << _tableName << "\n";
 
 		for (const auto& column : metadata.columns) {
 			std::cout << std::setw(TEXT_DISPLAY_LIMIT) << shortenText(column.name) << "  ";

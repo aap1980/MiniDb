@@ -92,7 +92,7 @@ CreateStatement::CreateStatement(CreateType type)
       ifNotExists(false),
       filePath(nullptr),
       schema(nullptr),
-      tableName(nullptr),
+      _tableName(nullptr),
       indexName(nullptr),
       indexColumns(nullptr),
       columns(nullptr),
@@ -103,7 +103,7 @@ CreateStatement::CreateStatement(CreateType type)
 CreateStatement::~CreateStatement() {
   free(filePath);
   free(schema);
-  free(tableName);
+  free(_tableName);
   free(indexName);
   delete select;
 

@@ -74,11 +74,11 @@ std::ostream& operator<<(std::ostream& stream, const ColumnType& column_type) {
 }
 
 // DeleteStatement
-DeleteStatement::DeleteStatement() : SQLStatement(kStmtDelete), schema(nullptr), tableName(nullptr), expr(nullptr) {}
+DeleteStatement::DeleteStatement() : SQLStatement(kStmtDelete), schema(nullptr), _tableName(nullptr), expr(nullptr) {}
 
 DeleteStatement::~DeleteStatement() {
   free(schema);
-  free(tableName);
+  free(_tableName);
   delete expr;
 }
 
@@ -138,14 +138,14 @@ ExportStatement::ExportStatement(ImportType type)
       type(type),
       filePath(nullptr),
       schema(nullptr),
-      tableName(nullptr),
+      _tableName(nullptr),
       select(nullptr),
       encoding(nullptr) {}
 
 ExportStatement::~ExportStatement() {
   free(filePath);
   free(schema);
-  free(tableName);
+  free(_tableName);
   delete select;
   free(encoding);
 }
@@ -160,14 +160,14 @@ ImportStatement::ImportStatement(ImportType type)
       type(type),
       filePath(nullptr),
       schema(nullptr),
-      tableName(nullptr),
+      _tableName(nullptr),
       whereClause(nullptr),
       encoding(nullptr) {}
 
 ImportStatement::~ImportStatement() {
   free(filePath);
   free(schema);
-  free(tableName);
+  free(_tableName);
   delete whereClause;
   free(encoding);
 }
@@ -177,14 +177,14 @@ InsertStatement::InsertStatement(InsertType type)
     : SQLStatement(kStmtInsert),
       type(type),
       schema(nullptr),
-      tableName(nullptr),
+      _tableName(nullptr),
       columns(nullptr),
       values(nullptr),
       select(nullptr) {}
 
 InsertStatement::~InsertStatement() {
   free(schema);
-  free(tableName);
+  free(_tableName);
   delete select;
 
   if (columns) {

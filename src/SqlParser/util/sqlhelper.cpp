@@ -334,7 +334,7 @@ void printImportStatementInfo(const ImportStatement* stmt, uintmax_t num_indent)
       inprint("AUTO", num_indent + 1);
       break;
   }
-  inprint(stmt->tableName, num_indent + 1);
+  inprint(stmt->_tableName, num_indent + 1);
   if (stmt->whereClause) {
     inprint("WHERE:", num_indent + 1);
     printExpression(stmt->whereClause, num_indent + 2);
@@ -359,8 +359,8 @@ void printExportStatementInfo(const ExportStatement* stmt, uintmax_t num_indent)
       break;
   }
 
-  if (stmt->tableName) {
-    inprint(stmt->tableName, num_indent + 1);
+  if (stmt->_tableName) {
+    inprint(stmt->_tableName, num_indent + 1);
   } else {
     printSelectStatementInfo(stmt->select, num_indent + 1);
   }
@@ -368,13 +368,13 @@ void printExportStatementInfo(const ExportStatement* stmt, uintmax_t num_indent)
 
 void printCreateStatementInfo(const CreateStatement* stmt, uintmax_t num_indent) {
   inprint("CreateStatement", num_indent);
-  inprint(stmt->tableName, num_indent + 1);
+  inprint(stmt->_tableName, num_indent + 1);
   if (stmt->filePath) inprint(stmt->filePath, num_indent + 1);
 }
 
 void printInsertStatementInfo(const InsertStatement* stmt, uintmax_t num_indent) {
   inprint("InsertStatement", num_indent);
-  inprint(stmt->tableName, num_indent + 1);
+  inprint(stmt->_tableName, num_indent + 1);
   if (stmt->columns) {
     inprint("Columns", num_indent + 1);
     for (char* col_name : *stmt->columns) {
