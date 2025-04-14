@@ -28,6 +28,10 @@ namespace MiniDb::Console {
 		hsql::SQLParserResult result;
 		hsql::SQLParser::parse(command, &result);
 
+		for (const auto* stmt : result.getStatements()) {
+			handleStatement(stmt);
+		}
+
 		if (result.isValid()) {
 			printf("Parsed successfully!\n");
 			printf("Number of statements: %lu\n", result.size());
@@ -44,6 +48,7 @@ namespace MiniDb::Console {
 				result.errorLine(),
 				result.errorColumn());
 		}
+
 	}
 
 }

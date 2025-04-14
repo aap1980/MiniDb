@@ -10,6 +10,7 @@ namespace MiniDb::Table {
 		std::string tableName;
 		std::string filename;
 	public:
+		TableMetadata() = default;
 		TableMetadata(const std::string tableName);
 		std::vector<MiniDb::Table::Column> columns;
 		void loadFromFile();
