@@ -2,6 +2,8 @@
 #include <iomanip>
 #include <fstream>
 #include <sstream>
+#include "Row.h"
+#include "Rows.h"
 #include "Table.h"
 #include "../Constants.h"
 #include "../Config/Config.h"
@@ -12,12 +14,12 @@
 namespace MiniDb::Table {
 
 	Table::Table(const std::string& tableName)
-		: tableName(tableName), metadata(tableName) {
+		: tableName(tableName), metadata(tableName), rows() {
 		std::string tablesPath = MiniDb::Config::Config::getInstance().getTablesPath();
 		dataFile = tablesPath + tableName + ".dat";
 	}
 
-	bool Table::readDataFromFile(const std::string& filename, std::vector<std::vector<std::string>>& rows) const {
+	bool Table::readDataFromFile(const std::string& filename, Rows& rows) const {
 		std::ifstream file(filename);
 		if (!file.is_open()) {
 			std::cerr << "Error opening data file: " << filename << std::endl;
@@ -33,7 +35,7 @@ namespace MiniDb::Table {
 				line.erase(0, pos + 1);
 			}
 			row.push_back(line);
-			rows.push_back(row);
+			rows.addRow(Row(std::move(row)));
 		}
 
 		file.close();
@@ -46,9 +48,15 @@ namespace MiniDb::Table {
 			throw FileWriteException("Error opening data file: " + dataFile);
 		}
 
+		for (const auto& row : rows.getRow()) {
+			for (const auto& value : row.getValues()) {
+				file << value << static_cast<char>(MiniDb::SEP);
+			}
+			file << '\n';
+		}
+
 		file.close();
 	}
-
 
 	void Table::addRow(const std::vector<std::string>& row) {
 		if (row.size() != metadata.columns.size()) {
@@ -56,12 +64,13 @@ namespace MiniDb::Table {
 			return;
 		}
 
+		rows.addRow(Row(row));
 		if (!writeRowToFile(row)) {
 			std::cerr << "Error: failed to add row to file.\n";
 		}
 	}
 
-	void Table::updateRow(const QueryCondition& condition, const std::vector<MiniDb::Table::ColumnUpdate>& columns) {
+	/*void Table::updateRow(const QueryCondition& condition, const std::vector<MiniDb::Table::ColumnUpdate>& columns) {
 		std::vector<std::vector<std::string>> rows;
 		if (!readDataFromFile(dataFile, rows)) {
 			return;
@@ -74,7 +83,7 @@ namespace MiniDb::Table {
 			const auto& conditions = condition.getConditions();
 			size_t colIndex = 0;
 
-			// Sprawdzanie, czy warunki w QueryCondition pasuj¹ do wiersza
+			// Sprawdzanie, czy warunki w QueryCondition pasujï¿½ do wiersza
 			for (const auto& [column, value] : conditions) {
 				auto matchLambda = [&row, &column, &value, &colIndex, this](bool& match) {
 					if (metadata.columns[colIndex].name == column && row[colIndex] != value) {
@@ -112,9 +121,9 @@ namespace MiniDb::Table {
 		else {
 			std::cerr << "Error: row not found for update.\n";
 		}
-	}
+	}*/
 
-	void Table::deleteRow(const QueryCondition& condition) {
+	/*void Table::deleteRow(const QueryCondition& condition) {
 		std::vector<std::vector<std::string>> rows;
 		if (!readDataFromFile(dataFile, rows)) {
 			return;
@@ -154,7 +163,7 @@ namespace MiniDb::Table {
 		else {
 			std::cerr << "Error: row not found for deletion.\n";
 		}
-	}
+	}*/
 
 	bool Table::writeRowToFile(const std::vector<std::string>& row) const {
 		std::ofstream file(dataFile, std::ios::app);
@@ -170,28 +179,6 @@ namespace MiniDb::Table {
 
 		file.close();
 		return true;
-	}
-
-	void Table::saveDataToFile(const std::string& filename, const std::vector<std::vector<std::string>>& rows) const {
-		std::ofstream file(filename, std::ios::trunc);
-		if (!file.is_open()) {
-			throw FileWriteException("Error opening file: " + filename);
-		}
-
-		try {
-			for (const auto& row : rows) {
-				for (const auto& data : row) {
-					file << data << static_cast<char>(MiniDb::SEP);
-				}
-				file << '\n';
-			}
-		}
-		catch (const std::exception& e) {
-			file.close();
-			throw FileWriteException("Error writing to file: " + filename + " - " + e.what());
-		}
-
-		file.close();
 	}
 
 	std::string shortenText(const std::string& text) {

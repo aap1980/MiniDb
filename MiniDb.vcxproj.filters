@@ -13,48 +13,33 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Table">
+      <UniqueIdentifier>{4ac2d681-f91a-4675-9969-fa5b2e860eb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Console">
+      <UniqueIdentifier>{463873f0-3e8f-4ca2-b9d6-6e06f6dede8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Database">
+      <UniqueIdentifier>{4ff03633-d119-4922-b44a-84b51aeb73cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Config">
+      <UniqueIdentifier>{94cdc92f-8669-4826-acd9-bd4eb28a1c3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SqlParser">
+      <UniqueIdentifier>{490a4055-dc2d-47df-85df-f468dfa93422}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MiniDb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Table\Table.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Config\Config.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Database\Database.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Table\Column.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Table\TableDataWriter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Table\QueryCondition.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Table\TableMetadata.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Utils\DateTimeUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Table\ColumnUpdate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Console\Console.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Executors\SelectExecutor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SqlParser\SQLParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SqlParser\SQLParserResult.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SqlParser\parser\bison_parser.cpp">
@@ -87,26 +72,44 @@
     <ClCompile Include="src\Statement\Statement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Table\Rows.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Table\Row.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Table</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Table\Rows.cpp">
+      <Filter>Table</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Console\Console.cpp">
+      <Filter>Console</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Database\Database.cpp">
+      <Filter>Database</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Config\Config.cpp">
+      <Filter>Config</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Table\Table.cpp">
+      <Filter>Table</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Table\TableDataWriter.cpp">
+      <Filter>Table</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Table\TableMetadata.cpp">
+      <Filter>Table</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Table\Column.cpp">
+      <Filter>Table</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Table\ColumnUpdate.cpp">
+      <Filter>Table</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SqlParser\SQLParser.cpp">
+      <Filter>SqlParser</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SqlParser\SQLParserResult.cpp">
+      <Filter>SqlParser</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Config\Config.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Table\Table.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Database\Database.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Table\Column.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Table\TableDataWriter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -125,25 +128,10 @@
     <ClInclude Include="src\Utils\DateTimeUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Table\ColumnUpdate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Console\Console.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Executors\SelectExecutor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\SqlParser\SQLParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\SQLParserResult.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\SqlParser\parser\bison_parser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\PlatformCompatibility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\SqlParser\parser\flex_lexer.h">
@@ -218,11 +206,38 @@
     <ClInclude Include="src\Statement\Statement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Table\Rows.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Table\Row.h">
-      <Filter>Header Files</Filter>
+      <Filter>Table</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Table\Rows.h">
+      <Filter>Table</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Table\Table.h">
+      <Filter>Table</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\SQLParser.h">
+      <Filter>SqlParser</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\SQLParserResult.h">
+      <Filter>SqlParser</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\PlatformCompatibility.h">
+      <Filter>SqlParser</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Database\Database.h">
+      <Filter>Database</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Config\Config.h">
+      <Filter>Config</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Console\Console.h">
+      <Filter>Console</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Table\Column.h">
+      <Filter>Table</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Table\ColumnUpdate.h">
+      <Filter>Table</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

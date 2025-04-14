@@ -28,9 +28,9 @@ namespace MiniDb::Console {
 		hsql::SQLParserResult result;
 		hsql::SQLParser::parse(command, &result);
 
-		for (const auto* stmt : result.getStatements()) {
-			handleStatement(stmt);
-		}
+		//for (const auto* stmt : result.getStatements()) {
+		//	handleStatement(stmt);
+		//}
 
 		if (result.isValid()) {
 			printf("Parsed successfully!\n");
