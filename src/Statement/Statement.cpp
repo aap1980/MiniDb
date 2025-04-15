@@ -2,6 +2,7 @@
 #include "SelectStatement.h"
 #include "../SqlParser/SQLParser.h"
 #include "../SqlParser/SQLParserResult.h"
+#include "../SqlParser/util/sqlhelper.h"
 #include <iostream>
 
 namespace MiniDb::Statement {
@@ -9,6 +10,12 @@ namespace MiniDb::Statement {
 	std::unique_ptr<Statement> Statement::fromSQL(const std::string& sql) {
 		hsql::SQLParserResult result;
 		hsql::SQLParser::parse(sql, &result);
+
+		if (result.isValid()) {
+			for (auto i = 0u; i < result.size(); ++i) {
+				hsql::printStatementInfo(result.getStatement(i));
+			}
+		}
 
 		if (!result.isValid() || result.size() == 0) {
 			std::cerr << "SQL parsing error: " << result.errorMsg() << std::endl;
