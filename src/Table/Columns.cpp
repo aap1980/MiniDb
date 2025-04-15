@@ -10,7 +10,11 @@ namespace MiniDb::Table {
 		_columns.push_back(column);
 	}
 
-	const std::vector<Column>& Columns::getColumn() const {
+	void Columns::addColumns(const std::vector<Column>& columns) {
+		_columns.insert(_columns.end(), columns.begin(), columns.end());
+	}
+
+	const std::vector<Column>& Columns::getColumns() const {
 		return _columns;
 	}
 

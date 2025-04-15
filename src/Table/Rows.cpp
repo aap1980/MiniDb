@@ -10,8 +10,12 @@ namespace MiniDb::Table {
 		_rows.push_back(row);
 	}
 
-	const std::vector<Row>& Rows::getRow() const {
+	const std::vector<Row>& Rows::getRows() const {
 		return _rows;
+	}
+
+	void Rows::clear() {
+		_rows.clear();
 	}
 
 }

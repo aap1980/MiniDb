@@ -15,13 +15,13 @@ namespace MiniDb::Statement {
 			return nullptr;
 		}
 
-		const hsql::SQLStatement* stmt = result.getStatement(0);
-		switch (stmt->type()) {
+		const hsql::SQLStatement* statement = result.getStatement(0);
+		switch (statement->type()) {
 		case hsql::kStmtSelect:
 			return std::make_unique<SelectStatement>(
-				static_cast<const hsql::SelectStatement*>(stmt));
+				static_cast<const hsql::SelectStatement*>(statement));
 		default:
-			std::cerr << "Nieobs³ugiwany typ zapytania." << std::endl;
+			std::cerr << "Unsupported query type." << std::endl;
 			return nullptr;
 		}
 	}

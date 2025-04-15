@@ -15,7 +15,7 @@ int main() {
 
 	MiniDb::Database::Database& database = MiniDb::Database::Database::getInstance();
 
-	database.loadAllTables();
+	database.loadTables();
 
 	/*std::vector<MiniDb::Table::Column> columns;
 	columns.push_back({ "id", "int" });

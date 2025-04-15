@@ -5,34 +5,36 @@
 
 namespace MiniDb::Statement {
 
-	SelectStatement::SelectStatement(const hsql::SelectStatement* stmt) {
-		if (stmt->fromTable != nullptr)
-			tableName_ = stmt->fromTable->getName();
+	SelectStatement::SelectStatement(const hsql::SelectStatement* statement) {
+		if (statement->fromTable != nullptr)
+			_tableName = statement->fromTable->getName();
 
-		selectAll_ = stmt->selectList->size() == 1 &&
-			(*stmt->selectList)[0]->type == hsql::kExprStar;
+		_selectAll = statement->selectList->size() == 1 &&
+			(*statement->selectList)[0]->type == hsql::kExprStar;
 	}
 
-	void SelectStatement::execute(MiniDb::Database::Database& db) const {
-		const MiniDb::Table::Table& table = db.getTable(tableName_);
-
-		if (!selectAll_) {
+	void SelectStatement::execute(MiniDb::Database::Database& database) const {
+		if (!_selectAll) {
 			std::cout << "Obs³uga innych kolumn ni¿ * niezaimplementowana.\n";
 			return;
 		}
 
-		const auto& columns = table.metadata.columns;
-		const auto& rows = table.rows;
+		MiniDb::Table::Table& table = database.getTable(_tableName);
+		table.loadDataFromFile();
+		table.printTable();
 
-		for (const auto& col : columns)
-			std::cout << col.name << "\t";
-		std::cout << "\n";
+		//const auto& columns = table.columns.getColumns();
+		//const auto& rows = table.rows;
 
-		/*for (const auto& row : rows) {
-			for (const auto& val : row)
-				std::cout << val << "\t";
-			std::cout << "\n";
-		}*/
+		//for (const auto& col : columns)
+		//	std::cout << col.name << "\t";
+		//std::cout << "\n";
+
+		//for (const auto& row : rows) {
+		//	for (const auto& val : row)
+		//		std::cout << val << "\t";
+		//	std::cout << "\n";
+		//}
 	}
 
 }

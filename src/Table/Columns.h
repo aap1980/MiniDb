@@ -9,8 +9,8 @@ namespace MiniDb::Table {
 	public:
 		std::size_t size() const;
 		void addColumn(const Column& column);
-		const std::vector<Column>& getColumn() const;
-
+		void addColumns(const std::vector<Column>& columns);
+		const std::vector<Column>& getColumns() const;
 	private:
 		std::vector<Column> _columns;
 	};

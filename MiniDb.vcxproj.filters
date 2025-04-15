@@ -40,21 +40,15 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{3592f73b-bf83-45e2-ad38-fffc4ba57cb7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Statement">
+      <UniqueIdentifier>{21131d92-b312-47b2-a780-48b37fd35492}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MiniDb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Table\QueryCondition.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Executors\SelectExecutor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Statement\SelectStatement.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Statement\Statement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Table\Row.cpp">
@@ -76,9 +70,6 @@
       <Filter>Table</Filter>
     </ClCompile>
     <ClCompile Include="src\Table\TableDataWriter.cpp">
-      <Filter>Table</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Table\TableMetadata.cpp">
       <Filter>Table</Filter>
     </ClCompile>
     <ClCompile Include="src\Table\Column.cpp">
@@ -123,6 +114,15 @@
     <ClCompile Include="src\Table\Columns.cpp">
       <Filter>Table</Filter>
     </ClCompile>
+    <ClCompile Include="src\Statement\SelectStatement.cpp">
+      <Filter>Statement</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Statement\Statement.cpp">
+      <Filter>Statement</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils\StringUtils.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Table\TableDataWriter.h">
@@ -138,12 +138,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Executors\SelectExecutor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SqlParser\sql\SelectStatement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Statement\Statement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Table\Row.h">
@@ -230,9 +224,6 @@
     <ClInclude Include="src\SqlParser\sql\PrepareStatement.h">
       <Filter>SqlParser\sql</Filter>
     </ClInclude>
-    <ClInclude Include="src\Statement\SelectStatement.h">
-      <Filter>SqlParser\sql</Filter>
-    </ClInclude>
     <ClInclude Include="src\SqlParser\sql\ShowStatement.h">
       <Filter>SqlParser\sql</Filter>
     </ClInclude>
@@ -251,11 +242,20 @@
     <ClInclude Include="src\Utils\DateTimeUtils.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\Table\TableMetadata.h">
-      <Filter>Table</Filter>
-    </ClInclude>
     <ClInclude Include="src\Table\Columns.h">
       <Filter>Table</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Statement\Statement.h">
+      <Filter>Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Statement\SelectStatement.h">
+      <Filter>Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SqlParser\sql\SelectStatement.h">
+      <Filter>SqlParser\sql</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\StringUtils.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -12,23 +12,21 @@ namespace MiniDb::Database {
 		return instance;
 	}
 
-	void Database::createTable(const std::string& _tableName, const std::vector<MiniDb::Table::Column>& columns) {
-		if (tables.find(_tableName) != tables.end()) {
-			throw std::runtime_error("Table '" + _tableName + "' already exists.");
+	void Database::createTable(const std::string& tableName, const std::vector<MiniDb::Table::Column>& columns) {
+		if (tables.find(tableName) != tables.end()) {
+			throw std::runtime_error("Table '" + tableName + "' already exists.");
 		}
 
-		MiniDb::Table::Table table(_tableName);
-		table.metadata.addColumns(columns);
-		table.metadata.saveToFile();
-		table.saveToFile();
+		MiniDb::Table::Table table(tableName);
+		table.columns.addColumns(columns);
+		table.saveMetadataToFile();
 
-		tables.emplace(_tableName, std::move(table));
+		tables.emplace(tableName, std::move(table));
 	}
 
-	bool Database::loadAllTables() {
-		namespace fs = std::filesystem;
+	void Database::loadTables() {
 		std::string tablesPath = MiniDb::Config::Config::getInstance().getTablesPath();
-		for (const auto& entry : fs::directory_iterator(tablesPath)) {
+		for (const auto& entry : std::filesystem::directory_iterator(tablesPath)) {
 			if (entry.path().extension() == ".md") {
 				std::string _tableName = entry.path().stem().string();
 				MiniDb::Table::Table table(_tableName);
@@ -36,22 +34,14 @@ namespace MiniDb::Database {
 				std::cout << "Successfully loaded table: " << _tableName << "\n";
 			}
 		}
-
-		return !tables.empty();
 	}
 
-	MiniDb::Table::Table& Database::getTable(const std::string& _tableName) {
-		auto it = tables.find(_tableName);
+	MiniDb::Table::Table& Database::getTable(const std::string& tableName) {
+		auto it = tables.find(tableName);
 		if (it != tables.end()) {
 			return it->second;
 		}
-		throw std::runtime_error("Table not found: " + _tableName);
-	}
-
-	void Database::listTables() const {
-		for (const auto& [name, _] : tables) {
-			std::cout << "- " << name << "\n";
-		}
+		throw std::runtime_error("Table not found: " + tableName);
 	}
 
 }

@@ -133,7 +133,6 @@
     <ClCompile Include="src\Config\Config.cpp" />
     <ClCompile Include="src\Console\Console.cpp" />
     <ClCompile Include="src\Database\Database.cpp" />
-    <ClCompile Include="src\Executors\SelectExecutor.cpp" />
     <ClCompile Include="src\SqlParser\parser\bison_parser.cpp" />
     <ClCompile Include="src\SqlParser\parser\flex_lexer.cpp" />
     <ClCompile Include="src\SqlParser\SQLParser.cpp" />
@@ -154,8 +153,8 @@
     <ClCompile Include="src\Table\Rows.cpp" />
     <ClCompile Include="src\Table\Table.cpp" />
     <ClCompile Include="src\Table\TableDataWriter.cpp" />
-    <ClCompile Include="src\Table\TableMetadata.cpp" />
     <ClCompile Include="src\Utils\DateTimeUtils.cpp" />
+    <ClCompile Include="src\Utils\StringUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="config.ini">
@@ -205,8 +204,8 @@
     <ClInclude Include="src\Table\Rows.h" />
     <ClInclude Include="src\Table\Table.h" />
     <ClInclude Include="src\Table\TableDataWriter.h" />
-    <ClInclude Include="src\Table\TableMetadata.h" />
     <ClInclude Include="src\Utils\DateTimeUtils.h" />
+    <ClInclude Include="src\Utils\StringUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\SqlParser\parser\.gitignore" />

@@ -8,48 +8,112 @@
 #include "../Constants.h"
 #include "../Config/Config.h"
 #include "../ErrorHandling.h"
-#include "TableMetadata.h"
 #include "ColumnUpdate.h"
+#include "filesystem"
+#include "../Utils/StringUtils.h"
 
 namespace MiniDb::Table {
 
-	Table::Table(const std::string& _tableName)
-		: _tableName(_tableName), metadata(), rows() {
+	Table::Table(const std::string& tableName)
+		: _tableName(tableName), rows() {
 		std::string tablesPath = MiniDb::Config::Config::getInstance().getTablesPath();
-		_dataFile = tablesPath + _tableName + ".dat";
-		metadata.initialize(_tableName);
+		_dataFile = tablesPath + tableName + ".dat";
+		_metadataFile = tablesPath + tableName + ".md";
+		loadMetadataFromFile();
 	}
 
-	bool Table::readDataFromFile(const std::string& _filename, Rows& rows) const {
-		std::ifstream file(_filename);
+	void Table::loadMetadataFromFile() {
+		if (!std::filesystem::exists(_metadataFile)) return;
+
+		std::ifstream file(_metadataFile);
 		if (!file.is_open()) {
-			std::cerr << "Error opening data file: " << _filename << std::endl;
-			return false;
+			throw FileWriteException("Error opening data file: " + _metadataFile);
 		}
 
 		std::string line;
 		while (std::getline(file, line)) {
-			std::vector<std::string> row;
-			size_t pos = 0;
-			while ((pos = line.find(static_cast<char>(MiniDb::SEP))) != std::string::npos) {
-				row.push_back(line.substr(0, pos));
-				line.erase(0, pos + 1);
+			if (line.find("Column") != std::string::npos) {
+				std::istringstream ss(line);
+				std::string objectName, attributeName, attributeValue;
+				std::string columnName, columnType;
+
+				std::getline(ss, objectName, SEP);
+				if (objectName != "Column") {
+					throw std::runtime_error("Invalid line in file (expected 'Column'): " + line);
+				}
+
+				std::getline(ss, attributeName, ':');
+				if (attributeName != "Name") {
+					throw std::runtime_error("Expected 'Name' in column definition: " + line);
+				}
+				std::getline(ss, attributeValue, SEP);
+				columnName = attributeValue;
+
+				std::getline(ss, attributeName, ':');
+				if (attributeName != "Type") {
+					throw std::runtime_error("Expected 'Type' in column definition: " + line);
+				}
+				std::getline(ss, attributeValue, SEP);
+				columnType = attributeValue;
+
+				MiniDb::Table::Column column(columnName, columnType);
+				columns.addColumn(column);
 			}
-			row.push_back(line);
-			rows.addRow(Row(std::move(row)));
+		}
+	}
+
+	void Table::saveMetadataToFile() {
+		std::filesystem::path filePath = _metadataFile;
+		std::filesystem::create_directories(filePath.parent_path());
+
+		std::ofstream file(_metadataFile, std::ios::out | std::ios::trunc);
+		if (!file.is_open()) {
+			throw std::runtime_error("Unable to create or open file: " + _metadataFile);
+		}
+
+		for (const auto& col : columns.getColumns()) {
+			file << "Column" << SEP
+				<< "Name:" << col.name << SEP
+				<< "Type:" << col.type << "\n";
 		}
 
 		file.close();
-		return true;
 	}
 
-	void Table::saveToFile() {
-		std::ofstream file(_dataFile);
-		if (!file.is_open()) {
+	void Table::loadDataFromFile() {
+		rows.clear();
+
+		if (!std::filesystem::exists(_dataFile)) return;
+
+		std::ifstream file(_dataFile);
+		if (!file) {
 			throw FileWriteException("Error opening data file: " + _dataFile);
 		}
 
-		for (const auto& row : rows.getRow()) {
+		std::string line;
+		while (std::getline(file, line)) {
+			std::vector<std::string> rowData;
+			std::stringstream ss(line);
+			std::string cell;
+
+			while (std::getline(ss, cell, static_cast<char>(MiniDb::SEP))) {
+				rowData.push_back(cell);
+			}
+
+			rows.addRow(Row(std::move(rowData)));
+		}
+	}
+
+	void Table::saveDataToFile() {
+		std::filesystem::path filePath = _dataFile;
+		std::filesystem::create_directories(filePath.parent_path());
+
+		std::ofstream file(_dataFile, std::ios::out | std::ios::trunc);
+		if (!file.is_open()) {
+			throw std::runtime_error("Unable to create or open file: " + _dataFile);
+		}
+
+		for (const auto& row : rows.getRows()) {
 			for (const auto& value : row.getValues()) {
 				file << value << static_cast<char>(MiniDb::SEP);
 			}
@@ -59,17 +123,17 @@ namespace MiniDb::Table {
 		file.close();
 	}
 
-	void Table::addRow(const std::vector<std::string>& row) {
-		if (row.size() != metadata.columns.size()) {
-			std::cerr << "Error: the number of data in a row does not match the number of columns.\n";
-			return;
-		}
+	//void Table::addRow(const std::vector<std::string>& row) {
+	//	if (row.size() != metadata.columns.size()) {
+	//		std::cerr << "Error: the number of data in a row does not match the number of columns.\n";
+	//		return;
+	//	}
 
-		rows.addRow(Row(row));
-		if (!writeRowToFile(row)) {
-			std::cerr << "Error: failed to add row to file.\n";
-		}
-	}
+	//	rows.addRow(Row(row));
+	//	if (!writeRowToFile(row)) {
+	//		std::cerr << "Error: failed to add row to file.\n";
+	//	}
+	//}
 
 	/*void Table::updateRow(const QueryCondition& condition, const std::vector<MiniDb::Table::ColumnUpdate>& columns) {
 		std::vector<std::vector<std::string>> rows;
@@ -166,68 +230,20 @@ namespace MiniDb::Table {
 		}
 	}*/
 
-	bool Table::writeRowToFile(const std::vector<std::string>& row) const {
-		std::ofstream file(_dataFile, std::ios::app);
-		if (!file.is_open()) {
-			std::cerr << "Error opening file: " << _dataFile << std::endl;
-			return false;
-		}
-
-		for (const auto& data : row) {
-			file << data << static_cast<char>(MiniDb::SEP);
-		}
-		file << '\n';
-
-		file.close();
-		return true;
-	}
-
-	std::string shortenText(const std::string& text) {
-		if (text.length() > TEXT_DISPLAY_LIMIT) {
-			return text.substr(0, TEXT_DISPLAY_LIMIT) + "..";
-		}
-		return text;
-	}
-
-	void Table::selectAll() const {
-		std::ifstream file(_dataFile);
-		if (!file.is_open()) {
-			std::cerr << "Error opening data file: " << _dataFile << std::endl;
-			return;
-		}
-
-		std::vector<std::vector<std::string>> rows;
-		std::string line;
-		while (std::getline(file, line)) {
-			std::vector<std::string> row;
-			size_t pos = 0;
-			while ((pos = line.find(static_cast<char>(MiniDb::SEP))) != std::string::npos) {
-				row.push_back(line.substr(0, pos));
-				line.erase(0, pos + 1);
-			}
-			row.push_back(line);
-			rows.push_back(row);
-		}
-
-		for (const auto& row : rows) {
-			for (const auto& data : row) {
-				std::cout << std::setw(TEXT_DISPLAY_LIMIT) << shortenText(data) << "  ";
-			}
-			std::cout << "\n";
-		}
-
-		file.close();
-	}
-
 	void Table::printTable() const {
 		std::cout << "Tabela: " << _tableName << "\n";
 
-		for (const auto& column : metadata.columns) {
-			std::cout << std::setw(TEXT_DISPLAY_LIMIT) << shortenText(column.name) << "  ";
+		for (const auto& column : columns.getColumns()) {
+			std::cout << std::setw(TEXT_DISPLAY_LIMIT) << MiniDb::Utils::StringUtils::shortenText(column.name, TEXT_DISPLAY_LIMIT) << "  ";
 		}
 		std::cout << "\n";
 
-		selectAll();
+		for (const auto& row : rows.getRows()) {
+			for (const auto& value : row.getValues()) {
+				std::cout << std::setw(TEXT_DISPLAY_LIMIT) << MiniDb::Utils::StringUtils::shortenText(value, TEXT_DISPLAY_LIMIT) << "  ";
+			}
+			std::cout << "\n";
+		}
 	}
 
 }

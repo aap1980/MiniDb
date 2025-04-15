@@ -6,14 +6,13 @@
 
 namespace MiniDb::Statement {
 
-    class SelectStatement : public Statement {
-    public:
-        SelectStatement(const hsql::SelectStatement* stmt);
-        void execute(MiniDb::Database::Database& db) const override;
-
-    private:
-        std::string tableName_;
-        bool selectAll_;
-    };
+	class SelectStatement : public Statement {
+	public:
+		SelectStatement(const hsql::SelectStatement* statement);
+		void execute(MiniDb::Database::Database& database) const override;
+	private:
+		std::string _tableName;
+		bool _selectAll;
+	};
 
 }
