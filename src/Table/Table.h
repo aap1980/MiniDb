@@ -14,6 +14,7 @@ namespace MiniDb::Table {
 		std::string _tableName;
 		std::string _dataFile;
 		std::string _metadataFile;
+
 	public:
 		Columns columns;
 		Rows rows;

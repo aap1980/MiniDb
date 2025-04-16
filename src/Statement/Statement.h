@@ -2,7 +2,9 @@
 
 #include <memory>
 #include <string>
+#include "../SqlParser/SQLParserResult.h"
 #include "../Database/Database.h"
+#include "../Table/QueryResult.h"
 
 namespace MiniDb::Statement {
 
@@ -11,7 +13,7 @@ namespace MiniDb::Statement {
 		virtual ~Statement() = default;
 
 		// G³ówna metoda wykonuj¹ca zapytanie
-		virtual void execute(MiniDb::Database::Database& db) const = 0;
+		virtual std::unique_ptr<MiniDb::Table::QueryResult> execute(MiniDb::Database::Database& database) const = 0;
 
 		// Fabryka: tworzy Statement z wyniku SQLParsera
 		static std::unique_ptr<Statement> fromSQL(const std::string& sql);

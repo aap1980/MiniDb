@@ -149,6 +149,7 @@
     <ClCompile Include="src\Table\Columns.cpp" />
     <ClCompile Include="src\Table\ColumnUpdate.cpp" />
     <ClCompile Include="src\Table\QueryCondition.cpp" />
+    <ClCompile Include="src\Table\QueryResult.cpp" />
     <ClCompile Include="src\Table\Row.cpp" />
     <ClCompile Include="src\Table\Rows.cpp" />
     <ClCompile Include="src\Table\Table.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="src\Table\Columns.h" />
     <ClInclude Include="src\Table\ColumnUpdate.h" />
     <ClInclude Include="src\Table\QueryCondition.h" />
+    <ClInclude Include="src\Table\QueryResult.h" />
     <ClInclude Include="src\Table\Row.h" />
     <ClInclude Include="src\Table\Rows.h" />
     <ClInclude Include="src\Table\Table.h" />

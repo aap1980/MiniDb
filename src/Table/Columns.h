@@ -11,6 +11,7 @@ namespace MiniDb::Table {
 		void addColumn(const Column& column);
 		void addColumns(const std::vector<Column>& columns);
 		const std::vector<Column>& getColumns() const;
+		const Column& getColumnByName(const std::string& name) const;
 	private:
 		std::vector<Column> _columns;
 	};

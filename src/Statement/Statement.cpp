@@ -8,29 +8,23 @@
 namespace MiniDb::Statement {
 
 	std::unique_ptr<Statement> Statement::fromSQL(const std::string& sql) {
-		hsql::SQLParserResult result;
-		hsql::SQLParser::parse(sql, &result);
+		auto result = std::make_unique<hsql::SQLParserResult>();
+		hsql::SQLParser::parse(sql, result.get());
 
-		if (result.isValid()) {
-			for (auto i = 0u; i < result.size(); ++i) {
-				hsql::printStatementInfo(result.getStatement(i));
-			}
-		}
-
-		if (!result.isValid() || result.size() == 0) {
-			std::cerr << "SQL parsing error: " << result.errorMsg() << std::endl;
+		if (!result->isValid() || result->size() == 0) {
+			std::cerr << "SQL parsing error: " << result->errorMsg() << std::endl;
 			return nullptr;
 		}
 
-		const hsql::SQLStatement* statement = result.getStatement(0);
-		switch (statement->type()) {
+		const hsql::SQLStatement* stmt = result->getStatement(0);
+		switch (stmt->type()) {
 		case hsql::kStmtSelect:
-			return std::make_unique<SelectStatement>(
-				static_cast<const hsql::SelectStatement*>(statement));
+			return std::make_unique<SelectStatement>(std::move(result));
 		default:
 			std::cerr << "Unsupported query type." << std::endl;
 			return nullptr;
 		}
+
 	}
 
 }
