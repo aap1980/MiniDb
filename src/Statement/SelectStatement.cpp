@@ -23,9 +23,9 @@ namespace MiniDb::Statement {
 	std::unique_ptr<MiniDb::Table::QueryResult> SelectStatement::execute(MiniDb::Database::Database& database) const {
 		// 1. Pobierz tabelê
 		const std::string tableName = _statement->fromTable->getName();
-		const auto& table = database.getTable(tableName);
+		MiniDb::Table::Table table = database.getTable(tableName);
+		table.loadDataFromFile();
 		const auto& columns = table.columns.getColumns();
-		const auto& rows = table.rows.getRows();
 
 		// 2. Okreœl indeksy kolumn do SELECT
 		MiniDb::Table::Columns selectedColumns;
@@ -111,7 +111,7 @@ namespace MiniDb::Statement {
 		MiniDb::Table::QueryResult queryResult;
 		queryResult.columns = selectedColumns;
 
-		for (const auto& row : rows) {
+		for (const auto& row : table.rows.getRows()) {
 			if (rowFilter && !(*rowFilter)(row)) {
 				continue;
 			}
