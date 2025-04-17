@@ -10,7 +10,6 @@
 #include "../ErrorHandling.h"
 #include "ColumnUpdate.h"
 #include "filesystem"
-#include "../Utils/StringUtils.h"
 
 namespace MiniDb::Table {
 
@@ -229,21 +228,5 @@ namespace MiniDb::Table {
 			std::cerr << "Error: row not found for deletion.\n";
 		}
 	}*/
-
-	void Table::printTable() const {
-		std::cout << "Tabela: " << _tableName << "\n";
-
-		for (const auto& column : columns.getColumns()) {
-			std::cout << std::setw(TEXT_DISPLAY_LIMIT) << MiniDb::Utils::StringUtils::shortenText(column.name, TEXT_DISPLAY_LIMIT) << "  ";
-		}
-		std::cout << "\n";
-
-		for (const auto& row : rows.getRows()) {
-			for (const auto& value : row.getValues()) {
-				std::cout << std::setw(TEXT_DISPLAY_LIMIT) << MiniDb::Utils::StringUtils::shortenText(value, TEXT_DISPLAY_LIMIT) << "  ";
-			}
-			std::cout << "\n";
-		}
-	}
 
 }

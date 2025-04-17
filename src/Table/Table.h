@@ -26,7 +26,6 @@ namespace MiniDb::Table {
 		void saveMetadataToFile();
 		void loadDataFromFile();
 		void saveDataToFile();
-		void printTable() const;
 	};
 
 }

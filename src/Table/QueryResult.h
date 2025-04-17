@@ -11,6 +11,7 @@ namespace MiniDb::Table {
 		QueryResult() = default;
 		Columns columns;
 		Rows rows;
+		void print() const;
 	};
 
 }
