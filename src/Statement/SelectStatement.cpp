@@ -106,31 +106,6 @@ namespace MiniDb::Statement {
 		}
 
 		return std::make_unique<MiniDb::Table::QueryResult>(std::move(queryResult));
-
-
-
-
-		//if (!_selectAll) {
-		//	std::cout << "Obsługa innych kolumn niż * niezaimplementowana.\n";
-		//	return;
-		//}
-
-		//MiniDb::Table::Table& table = database.getTable(_tableName);
-		//table.loadDataFromFile();
-		//table.printTable();
-
-		//const auto& columns = table.columns.getColumns();
-		//const auto& rows = table.rows;
-
-		//for (const auto& col : columns)
-		//	std::cout << col.name << "\t";
-		//std::cout << "\n";
-
-		//for (const auto& row : rows) {
-		//	for (const auto& val : row)
-		//		std::cout << val << "\t";
-		//	std::cout << "\n";
-		//}
 	}
 
 }
