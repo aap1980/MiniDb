@@ -21,80 +21,59 @@ namespace MiniDb::Statement {
 	}
 
 	std::unique_ptr<MiniDb::Table::QueryResult> SelectStatement::execute(MiniDb::Database::Database& database) const {
-		// 1. Pobierz tabelê
+		// 1. Pobierz tabelÄ™
 		const std::string tableName = _statement->fromTable->getName();
 		MiniDb::Table::Table table = database.getTable(tableName);
 		table.loadDataFromFile();
 		const auto& columns = table.columns.getColumns();
 
-		// 2. Okreœl indeksy kolumn do SELECT
+		// 2. OkreÅ›l indeksy kolumn do SELECT
 		MiniDb::Table::Columns selectedColumns;
-		std::vector<std::size_t> selectedColumnIndexes;
-		std::vector<std::string> selectedColumnNames;
 
 		for (const auto* expr : *_statement->selectList) {
 			if (expr->type == hsql::kExprColumnRef) {
 				std::string columnName = expr->name;
 				selectedColumns.addColumn(table.columns.getColumnByName(columnName));
-				selectedColumnNames.push_back(columnName);
-
-				auto it = std::find_if(columns.begin(), columns.end(),
-					[&columnName](const Table::Column& col) {
-						return col.name == columnName;
-					});
-
-				if (it == columns.end()) {
-					throw std::runtime_error("Unknown column: " + columnName);
-				}
-
-				selectedColumnIndexes.push_back(std::distance(columns.begin(), it));
 			}
 			else {
 				throw std::runtime_error("Only column references are supported.");
 			}
 		}
 
-		// 3. WHERE — przygotuj filtr (jeœli jest)
+		// 3. WHERE â€” przygotuj filtr (jeÅ›li jest)
+		// expr â€“ lewa strona to kolumna
+		// expr2 â€“ prawa strona to wartoÅ›Ä‡
 		std::optional<std::function<bool(const Table::Row&)>> rowFilter;
 
 		if (_statement->whereClause != nullptr) {
-			const auto* where = _statement->whereClause;
+			const auto* whereClause = _statement->whereClause;
 
-			if (where->type == hsql::kExprOperator &&
-				where->opType != hsql::kOpOr && where->opType != hsql::kOpAnd &&
-				where->expr && where->expr2 &&
-				where->expr->type == hsql::kExprColumnRef &&
-				where->expr2->type == hsql::kExprLiteralInt) {
+			if (whereClause->type == hsql::kExprOperator &&
+				whereClause->opType != hsql::kOpOr && whereClause->opType != hsql::kOpAnd &&
+				whereClause->expr && whereClause->expr2 &&
+				whereClause->expr->type == hsql::kExprColumnRef &&
+				whereClause->expr2->type == hsql::kExprLiteralInt) {
 
-				std::string colName = where->expr->name;
-				int literal = where->expr2->ival;
+				std::string columnName = whereClause->expr->name;
+				int literal = whereClause->expr2->ival;
 
-				auto it = std::find_if(columns.begin(), columns.end(),
-					[&colName](const Table::Column& col) {
-						return col.name == colName;
-					});
+				auto columnIndex = table.columns.getColumnIndexByName(columnName);
 
-				if (it == columns.end()) {
-					throw std::runtime_error("Unknown column in WHERE: " + colName);
-				}
-
-				std::size_t colIndex = std::distance(columns.begin(), it);
-
-				// Tworzymy funkcjê filtruj¹c¹
-				switch (where->opType) {
+				// Tworzymy lambda funkcjÄ™ filtrujÄ…cÄ…
+				switch (whereClause->opType) {
 				case hsql::kOpEquals:
-					rowFilter = [colIndex, literal](const Table::Row& row) {
-						return std::stoi(row.getValueByIndex(colIndex)) == literal;
+					rowFilter = [columnIndex, literal](const Table::Row& row) {
+						return std::stoi(row.getValueByIndex(columnIndex)) == literal;
 						};
 					break;
 				case hsql::kOpGreater:
-					rowFilter = [colIndex, literal](const Table::Row& row) {
-						return std::stoi(row.getValueByIndex(colIndex)) > literal;
+					rowFilter = [columnIndex, literal](const Table::Row& row) {
+						return std::stoi(row.getValueByIndex(columnIndex)) > literal;
 						};
 					break;
 				case hsql::kOpLess:
-					rowFilter = [colIndex, literal](const Table::Row& row) {
-						return std::stoi(row.getValueByIndex(colIndex)) < literal;
+					rowFilter = [columnIndex, literal](const Table::Row& row) {
+						return std::stoi(row.getValueByIndex(columnIndex)) < literal;
 						};
 					break;
 				default:
@@ -107,7 +86,7 @@ namespace MiniDb::Statement {
 			}
 		}
 
-		// 4. Sk³adanie QueryResult
+		// 4. SkÅ‚adanie QueryResult
 		MiniDb::Table::QueryResult queryResult;
 		queryResult.columns = selectedColumns;
 
@@ -116,11 +95,13 @@ namespace MiniDb::Statement {
 				continue;
 			}
 
-			std::vector<std::string> newRow;
-			for (std::size_t idx : selectedColumnIndexes) {
-				newRow.push_back(row.getValueByIndex(idx));
+			std::vector<std::string> resultRow;
+			for (const auto& column : selectedColumns.getColumns()) {
+				auto columnIndex = table.columns.getColumnIndexByName(column.name);
+				resultRow.push_back(row.getValueByIndex(columnIndex));
 			}
-			queryResult.rows.addRow(Table::Row(std::move(newRow)));
+
+			queryResult.rows.addRow(Table::Row(std::move(resultRow)));
 		}
 
 		return std::make_unique<MiniDb::Table::QueryResult>(std::move(queryResult));
@@ -129,7 +110,7 @@ namespace MiniDb::Statement {
 
 
 		//if (!_selectAll) {
-		//	std::cout << "Obs³uga innych kolumn ni¿ * niezaimplementowana.\n";
+		//	std::cout << "ObsÅ‚uga innych kolumn niÅ¼ * niezaimplementowana.\n";
 		//	return;
 		//}
 

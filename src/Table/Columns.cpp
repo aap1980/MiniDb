@@ -8,11 +8,18 @@ namespace MiniDb::Table {
 	}
 
 	void Columns::addColumn(const Column& column) {
+		for (const auto& col : _columns) {
+			if (col.name == column.name) {
+				throw std::runtime_error("Duplicate column name: " + column.name);
+			}
+		}
 		_columns.push_back(column);
 	}
 
 	void Columns::addColumns(const std::vector<Column>& columns) {
-		_columns.insert(_columns.end(), columns.begin(), columns.end());
+		for (const auto& column : columns) {
+			addColumn(column);
+		}
 	}
 
 	const std::vector<Column>& Columns::getColumns() const {
@@ -28,5 +35,13 @@ namespace MiniDb::Table {
 		throw std::out_of_range("Column not found: " + name);
 	}
 
+	const std::size_t Columns::getColumnIndexByName(const std::string& name) const {
+		for (std::size_t i = 0; i < _columns.size(); ++i) {
+			if (_columns[i].name == name) {
+				return i;
+			}
+		}
+		throw std::out_of_range("Column not found: " + name);
+	}
 
 }
