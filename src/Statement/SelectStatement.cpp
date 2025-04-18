@@ -231,7 +231,50 @@ namespace MiniDb::Statement {
 			}
 		}
 
+		// 4. Przetwórz klauzulę WHERE
+		std::optional<ParsedWhereCondition> whereConditionOpt;
 
+		if (_statement->whereClause != nullptr) {
+			const auto* clause = _statement->whereClause;
+			// Uproszczone parsowanie: zakładamy column op literal
+			if (clause->type == hsql::kExprOperator &&
+				clause->opType != hsql::kOpOr && clause->opType != hsql::kOpAnd &&
+				clause->expr && clause->expr->type == hsql::kExprColumnRef &&
+				clause->expr2 && (clause->expr2->type == hsql::kExprLiteralInt || clause->expr2->type == hsql::kExprLiteralString || clause->expr2->type == hsql::kExprLiteralFloat))
+			{
+				std::string colName = clause->expr->name;
+				std::string tableAlias = clause->expr->table ? clause->expr->table : "";
+
+				if (tableAlias.empty()) {
+					throw std::runtime_error("Column '" + colName + "' in WHERE clause must be qualified with a table alias when using JOIN.");
+				}
+				if (!aliasToIndex.count(tableAlias)) {
+					throw std::runtime_error("Unknown table alias '" + tableAlias + "' in WHERE clause.");
+				}
+
+				LiteralValue literal;
+
+				switch (clause->expr2->type) {
+				case hsql::kExprLiteralInt:
+					literal = static_cast<long>(clause->expr2->ival);
+					break;
+				case hsql::kExprLiteralFloat:
+					literal = clause->expr2->fval;
+					break;
+				case hsql::kExprLiteralString:
+					literal = std::string(clause->expr2->name);
+					break;
+				default:
+					throw std::runtime_error("Unsupported literal type in WHERE clause.");
+				}
+
+				whereConditionOpt.emplace(ParsedWhereCondition{ tableAlias, colName, clause->opType, literal });
+
+			}
+			else {
+				throw std::runtime_error("Unsupported WHERE clause structure. Expected: alias.column OPERATOR literal.");
+			}
+		}
 
 
 
