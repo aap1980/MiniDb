@@ -1,5 +1,6 @@
 SELECT * FROM Users;
 SELECT * FROM Users WHERE id = 2;
 SELECT login, first_name, last_name, created_at FROM Users WHERE id = 2;
+SELECT u.login, u.first_name, u.last_name, u.created_at FROM Users u WHERE u.id = 2;
 
 SELECT * FROM NotExistsTable;

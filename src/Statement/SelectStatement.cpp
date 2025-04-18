@@ -12,12 +12,6 @@ namespace MiniDb::Statement {
 	SelectStatement::SelectStatement(std::unique_ptr<hsql::SQLParserResult> parserResult) {
 		_parserResult = std::move(parserResult);
 		_statement = static_cast<const hsql::SelectStatement*>(_parserResult->getStatement(0));
-
-		//if (_statement->fromTable != nullptr)
-		//	_tableName = _statement->fromTable->getName();
-
-		//_selectAll = _statement->selectList->size() == 1 &&
-		//	(*_statement->selectList)[0]->type == hsql::kExprStar;
 	}
 
 	std::unique_ptr<MiniDb::Table::QueryResult> SelectStatement::execute(MiniDb::Database::Database& database) const {
@@ -27,16 +21,23 @@ namespace MiniDb::Statement {
 		table.loadDataFromFile();
 		const auto& columns = table.columns.getColumns();
 
-		// 2. Określ indeksy kolumn do SELECT
+		// 2. Określ kolumny do SELECT
 		MiniDb::Table::Columns selectedColumns;
 
-		for (const auto* expr : *_statement->selectList) {
-			if (expr->type == hsql::kExprColumnRef) {
-				std::string columnName = expr->name;
-				selectedColumns.addColumn(table.columns.getColumnByName(columnName));
-			}
-			else {
-				throw std::runtime_error("Only column references are supported.");
+		bool selectAll = _statement->selectList->size() == 1 && (*_statement->selectList)[0]->type == hsql::kExprStar;
+
+		if (selectAll) {
+			selectedColumns.addColumns(table.columns.getColumns());
+		}
+		else {
+			for (const auto* expr : *_statement->selectList) {
+				if (expr->type == hsql::kExprColumnRef) {
+					std::string columnName = expr->name;
+					selectedColumns.addColumn(table.columns.getColumnByName(columnName));
+				}
+				else {
+					throw std::runtime_error("Unsupported SELECT expression. Only column references or '*' are supported.");
+				}
 			}
 		}
 
