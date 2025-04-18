@@ -7,6 +7,7 @@
 #include <optional>
 #include <functional>
 #include <map>
+#include <variant>
 
 namespace MiniDb::Statement {
 
@@ -22,6 +23,22 @@ namespace MiniDb::Statement {
 		std::string rightTableAlias;
 		std::string rightColumnName;
 		hsql::OperatorType opType = hsql::kOpEquals;
+	};
+
+	// Reprezentuje sparsowany warunek WHERE
+	using LiteralValue = std::variant<long, double, std::string>; // Użyj std::variant lub podobnego
+	struct ParsedWhereCondition {
+		std::string tableAlias;
+		std::string columnName;
+		hsql::OperatorType opType;
+		LiteralValue value;
+	};
+
+	// Informacje o kolumnie wybranej w SELECT
+	struct SelectedColumnInfo {
+		std::string sourceTableAlias;
+		std::string sourceColumnName;
+		MiniDb::Table::Column originalDefinition; // Przechowujemy oryginalną definicję
 	};
 
 	// Informacje o tabeli biorącej udział w zapytaniu
@@ -42,7 +59,7 @@ namespace MiniDb::Statement {
 		std::map<std::string, size_t> aliasToIndex; // Mapowanie aliasu na indeks w queryTablesOrder
 		std::map<std::string, const MiniDb::Table::Columns*> tableColumnsMap; // Cache definicji kolumn per alias
 
-		// Rekurencyjne przetwarzanie FROM/JOIN
+		// 2. Rekurencyjne przetwarzanie FROM/JOIN
 		std::function<void(const hsql::TableRef*)> processTableRefRecursively;
 
 		processTableRefRecursively =
@@ -158,6 +175,66 @@ namespace MiniDb::Statement {
 
 		processTableRefRecursively(_statement->fromTable);
 
+		// 3. Przetwórz listę SELECT
+		MiniDb::Table::Columns resultColumnsDefinition; // Definicje kolumn dla wyniku
+		std::vector<SelectedColumnInfo> selectedColumnsList; // Co dokładnie wybrać i skąd
+
+		if (!_statement->selectList) {
+			throw std::runtime_error("Missing SELECT list.");
+		}
+
+		bool selectAll = _statement->selectList->size() == 1 && (*_statement->selectList)[0]->type == hsql::kExprStar;
+
+		if (selectAll) {
+			for (const auto& qtInfo : queryTablesOrder) {
+				for (const auto& colDef : qtInfo.table.columns.getColumns()) {
+					// Tworzymy nową definicję dla wyniku, potencjalnie z prefiksem aliasu dla jasności
+					MiniDb::Table::Column resultColDef = colDef; // Kopiujemy metadane
+					resultColDef.name = qtInfo.alias + "." + colDef.name; // Np. "u.login"
+					resultColumnsDefinition.addColumn(resultColDef);
+					selectedColumnsList.push_back({ qtInfo.alias, colDef.name, colDef }); // Przechowujemy oryginał
+				}
+			}
+		}
+		else {
+			for (const hsql::Expr* expr : *_statement->selectList) {
+				if (expr->type == hsql::kExprColumnRef) {
+					std::string columnName = expr->name;
+					std::string tableAlias = expr->table ? expr->table : "";
+
+					if (tableAlias.empty()) {
+						// Można by próbować rozwiązać niejednoznaczność, jeśli nazwa jest unikalna we wszystkich tabelach,
+						// ale wymaganie aliasu przy JOIN jest bezpieczniejsze.
+						throw std::runtime_error("Column '" + columnName + "' in SELECT list must be qualified with a table alias when using JOIN.");
+					}
+
+					auto aliasIt = aliasToIndex.find(tableAlias);
+					if (aliasIt == aliasToIndex.end()) {
+						throw std::runtime_error("Unknown table alias '" + tableAlias + "' in SELECT list.");
+					}
+
+					size_t tableIndex = aliasIt->second;
+					const MiniDb::Table::Table& sourceTable = queryTablesOrder[tableIndex].table;
+
+					try {
+						const MiniDb::Table::Column& originalColDef = sourceTable.columns.getColumnByName(columnName);
+						resultColumnsDefinition.addColumn(originalColDef); // Dodajemy do definicji wyniku
+						selectedColumnsList.push_back({ tableAlias, columnName, originalColDef }); // Zapisujemy skąd brać dane
+					}
+					catch (const std::runtime_error& e) {
+						throw std::runtime_error("Column '" + columnName + "' not found in table with alias '" + tableAlias + "'.");
+					}
+				}
+				else {
+					throw std::runtime_error("Unsupported expression type in SELECT list. Only columns (alias.name) or * are supported.");
+				}
+			}
+		}
+
+
+
+
+
 
 		// 1. Pobierz tabelę
 		std::string tableAlias;
@@ -175,7 +252,7 @@ namespace MiniDb::Statement {
 		// 2. Określ kolumny do SELECT
 		MiniDb::Table::Columns selectedColumns;
 
-		bool selectAll = _statement->selectList->size() == 1 && (*_statement->selectList)[0]->type == hsql::kExprStar;
+		/*bool*/ selectAll = _statement->selectList->size() == 1 && (*_statement->selectList)[0]->type == hsql::kExprStar;
 
 		if (selectAll) {
 			selectedColumns.addColumns(table.columns.getColumns());
