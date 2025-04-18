@@ -16,7 +16,14 @@ namespace MiniDb::Statement {
 
 	std::unique_ptr<MiniDb::Table::QueryResult> SelectStatement::execute(MiniDb::Database::Database& database) const {
 		// 1. Pobierz tabelę
-		const std::string tableName = _statement->fromTable->getName();
+		std::string tableAlias;
+		if (_statement->fromTable->alias != nullptr) {
+			tableAlias = _statement->fromTable->alias->name;
+		}
+
+		std::string tableName;
+		tableName = _statement->fromTable->name;
+
 		MiniDb::Table::Table table = database.getTable(tableName);
 		table.loadDataFromFile();
 		const auto& columns = table.columns.getColumns();
@@ -33,6 +40,10 @@ namespace MiniDb::Statement {
 			for (const auto* expr : *_statement->selectList) {
 				if (expr->type == hsql::kExprColumnRef) {
 					std::string columnName = expr->name;
+					std::string columnPrefix = expr->table;
+					if (!columnPrefix.empty() && columnPrefix != tableAlias) {
+						throw std::runtime_error("Unknown table alias: " + columnPrefix);
+					}
 					selectedColumns.addColumn(table.columns.getColumnByName(columnName));
 				}
 				else {
@@ -56,7 +67,12 @@ namespace MiniDb::Statement {
 				whereClause->expr2->type == hsql::kExprLiteralInt) {
 
 				std::string columnName = whereClause->expr->name;
+				std::string columnPrefix = whereClause->expr->table;
 				int literal = whereClause->expr2->ival;
+
+				if (!columnPrefix.empty() && columnPrefix != tableAlias) {
+					throw std::runtime_error("Unknown table alias: " + columnPrefix);
+				}
 
 				auto columnIndex = table.columns.getColumnIndexByName(columnName);
 
