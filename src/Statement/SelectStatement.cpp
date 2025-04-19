@@ -172,10 +172,10 @@ namespace MiniDb::Statement {
 				table.loadDataFromFile();
 
 				size_t currentIndex = queryTablesOrder.size();
+				aliasToIndex[tableAlias] = currentIndex;
 				// Dodajemy tabelę bez warunku JOIN (bo to albo tabela bazowa, albo prawa strona JOINa,
 				// której warunek zostanie dodany później w sekcji kTableJoin)
 				queryTablesOrder.push_back({ tableAlias, tableName, std::move(table), std::nullopt });
-				aliasToIndex[tableAlias] = currentIndex;
 				tableColumnsMap[tableAlias] = &queryTablesOrder[currentIndex].table.columns;
 				break;
 			}
