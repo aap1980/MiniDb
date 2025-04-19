@@ -49,6 +49,92 @@ namespace MiniDb::Statement {
 		std::optional<ParsedJoinCondition> joinCondition; // Warunek łączący z *poprzednią* tabelą w kolejności
 	};
 
+	// Kontekst dla aktualnie przetwarzanego połączonego wiersza (mapa alias -> wskaźnik na Row)
+	using JoinedRowContext = std::map<std::string, const MiniDb::Table::Row*>;
+
+	// Pobiera wartość z odpowiedniego wiersza w kontekście
+	const std::string& getValueFromContext(
+		const JoinedRowContext& context,
+		const std::string& tableAlias,
+		const std::string& columnName,
+		const std::map<std::string, const MiniDb::Table::Columns*>& columnInfos)
+	{
+		auto rowIt = context.find(tableAlias);
+		auto colInfoIt = columnInfos.find(tableAlias);
+		if (rowIt == context.end() || colInfoIt == columnInfos.end()) {
+			throw std::runtime_error("Internal error: Cannot find table '" + tableAlias + "' in join context.");
+		}
+		const MiniDb::Table::Row* row = rowIt->second;
+		const MiniDb::Table::Columns* columns = colInfoIt->second;
+		try {
+			size_t colIndex = columns->getColumnIndexByName(columnName);
+			return row->getValueByIndex(colIndex);
+		}
+		catch (const std::runtime_error& e) {
+			throw std::runtime_error("Internal error: Cannot find column '" + columnName + "' in table '" + tableAlias + "' during context lookup.");
+		}
+	}
+
+	// Ewaluuje warunek JOIN
+	bool evaluateJoinCondition(
+		const ParsedJoinCondition& cond,
+		const JoinedRowContext& context,
+		const std::map<std::string, const MiniDb::Table::Columns*>& columnInfos)
+	{
+		// TODO: Dodać obsługę różnych typów operatorów jeśli potrzeba
+		if (cond.opType != hsql::kOpEquals) {
+			throw std::runtime_error("Only '=' operator is supported in JOIN ON conditions.");
+		}
+
+		const std::string& leftValue = getValueFromContext(context, cond.leftTableAlias, cond.leftColumnName, columnInfos);
+		const std::string& rightValue = getValueFromContext(context, cond.rightTableAlias, cond.rightColumnName, columnInfos);
+
+		// Proste porównanie stringów - W REALNEJ BAZIE WYMAGA OBSŁUGI TYPÓW!
+		return leftValue == rightValue;
+	}
+
+	// Ewaluuje warunek WHERE
+	bool evaluateWhereCondition(
+		const ParsedWhereCondition& cond,
+		const JoinedRowContext& context,
+		const std::map<std::string, const MiniDb::Table::Columns*>& columnInfos)
+	{
+		const std::string& columnValueStr = getValueFromContext(context, cond.tableAlias, cond.columnName, columnInfos);
+
+		// BARDZO UPROSZCZONA EWALUACJA - WYMAGA OBSŁUGI TYPÓW I BŁĘDÓW KONWERSJI!
+		try {
+			if (std::holds_alternative<long>(cond.value)) {
+				long literalValue = std::get<long>(cond.value);
+				long columnValue = std::stol(columnValueStr);
+				switch (cond.opType) {
+				case hsql::kOpEquals: return columnValue == literalValue;
+				case hsql::kOpNotEquals: return columnValue != literalValue;
+				case hsql::kOpLess: return columnValue < literalValue;
+				case hsql::kOpLessEq: return columnValue <= literalValue;
+				case hsql::kOpGreater: return columnValue > literalValue;
+				case hsql::kOpGreaterEq: return columnValue >= literalValue;
+				default: throw std::runtime_error("Unsupported WHERE operator for INT.");
+				}
+			}
+			else if (std::holds_alternative<std::string>(cond.value)) {
+				const std::string& literalValue = std::get<std::string>(cond.value);
+				switch (cond.opType) {
+				case hsql::kOpEquals: return columnValueStr == literalValue;
+				case hsql::kOpNotEquals: return columnValueStr != literalValue;
+				default: throw std::runtime_error("Unsupported WHERE operator for STRING.");
+				}
+			}
+			// TODO: dodać obsługę double jeśli jest potrzebna
+			else {
+				throw std::runtime_error("Unsupported literal type in WHERE clause.");
+			}
+		}
+		catch (const std::exception& e) { // Łapie błędy konwersji (np. stol) lub inne
+			std::cerr << "Warning: Type conversion or comparison error in WHERE for value '" << columnValueStr << "': " << e.what() << std::endl;
+			return false; // Błąd = warunek niespełniony
+		}
+	}
+
 	std::unique_ptr<MiniDb::Table::QueryResult> SelectStatement::execute(MiniDb::Database::Database& database) const {
 		if (!_statement || !_statement->fromTable) {
 			throw std::runtime_error("Invalid SELECT statement structure: missing FROM clause.");
@@ -276,11 +362,74 @@ namespace MiniDb::Statement {
 			}
 		}
 
+		// 5. Wykonaj złączenie (Nested Loop) i filtrowanie
+		auto queryResult = std::make_unique<MiniDb::Table::QueryResult>();
+		queryResult->columns = resultColumnsDefinition; // Ustaw metadane kolumn wyniku
+
+		// Rekurencyjna funkcja pomocnicza do iteracji
+		std::function<void(size_t, JoinedRowContext)> processJoinLevel =
+			[&](size_t currentTableIndex, JoinedRowContext currentContext)
+			{
+				const QueryTableInfo& currentTableInfo = queryTablesOrder[currentTableIndex];
+
+				for (const MiniDb::Table::Row& row : currentTableInfo.table.rows.getRows()) {
+					currentContext[currentTableInfo.alias] = &row; // Aktualizujemy kontekst
+
+					bool joinOk = true;
+					if (currentTableIndex > 0) { // Sprawdź warunek JOIN dla tabel > 0
+						// joinCondition powinno być ustawione w QueryTableInfo dla tabel > 0
+						if (!currentTableInfo.joinCondition.has_value()) {
+							throw std::logic_error("Internal error: Missing JOIN condition for table " + currentTableInfo.alias);
+						}
+						joinOk = evaluateJoinCondition(currentTableInfo.joinCondition.value(), currentContext, tableColumnsMap);
+					}
+
+					if (joinOk) {
+						if (currentTableIndex + 1 < queryTablesOrder.size()) {
+							// Przejdź do następnej tabeli w JOIN
+							processJoinLevel(currentTableIndex + 1, currentContext);
+						}
+						else {
+							// Ostatnia tabela - mamy pełny połączony wiersz (w currentContext)
+							// Zastosuj WHERE
+							bool whereOk = true;
+							if (whereConditionOpt) {
+								whereOk = evaluateWhereCondition(whereConditionOpt.value(), currentContext, tableColumnsMap);
+							}
+
+							if (whereOk) {
+								// Zbuduj wiersz wynikowy
+								std::vector<std::string> resultRowValues;
+								resultRowValues.reserve(selectedColumnsList.size());
+								for (const auto& selectedCol : selectedColumnsList) {
+									resultRowValues.push_back(
+										getValueFromContext(currentContext, selectedCol.sourceTableAlias, selectedCol.sourceColumnName, tableColumnsMap)
+									);
+								}
+								// Dodaj wiersz do wyniku używając konstruktora Row z MiniDb
+								queryResult->rows.addRow(MiniDb::Table::Row(std::move(resultRowValues)));
+							}
+						}
+					}
+				}
+				// Po zakończeniu pętli dla danego poziomu, kontekst dla tego aliasu
+				// zostanie automatycznie nadpisany w następnej iteracji pętli zewnętrznej
+				// lub funkcja zakończy działanie. Nie trzeba jawnie usuwać.
+			};
+
+		// Rozpocznij rekurencję od pierwszej tabeli (indeks 0), jeśli istnieją tabele
+		if (!queryTablesOrder.empty()) {
+			JoinedRowContext initialContext;
+			processJoinLevel(0, initialContext);
+		}
+
+		// 6. Zwróć wynik
+		return queryResult;
 
 
 
 		// 1. Pobierz tabelę
-		std::string tableAlias;
+		/*std::string tableAlias;
 		if (_statement->fromTable->alias != nullptr) {
 			tableAlias = _statement->fromTable->alias->name;
 		}
@@ -290,12 +439,12 @@ namespace MiniDb::Statement {
 
 		MiniDb::Table::Table table = database.getTable(tableName);
 		table.loadDataFromFile();
-		const auto& columns = table.columns.getColumns();
+		const auto& columns = table.columns.getColumns();*/
 
 		// 2. Określ kolumny do SELECT
-		MiniDb::Table::Columns selectedColumns;
+		/*MiniDb::Table::Columns selectedColumns;
 
-		/*bool*/ selectAll = _statement->selectList->size() == 1 && (*_statement->selectList)[0]->type == hsql::kExprStar;
+		bool selectAll = _statement->selectList->size() == 1 && (*_statement->selectList)[0]->type == hsql::kExprStar;
 
 		if (selectAll) {
 			selectedColumns.addColumns(table.columns.getColumns());
@@ -314,12 +463,12 @@ namespace MiniDb::Statement {
 					throw std::runtime_error("Unsupported SELECT expression. Only column references or '*' are supported.");
 				}
 			}
-		}
+		}*/
 
 		// 3. WHERE — przygotuj filtr (jeśli jest)
 		// expr – lewa strona to kolumna
 		// expr2 – prawa strona to wartość
-		std::optional<std::function<bool(const Table::Row&)>> rowFilter;
+		/*std::optional<std::function<bool(const Table::Row&)>> rowFilter;
 
 		if (_statement->whereClause != nullptr) {
 			const auto* whereClause = _statement->whereClause;
@@ -365,10 +514,10 @@ namespace MiniDb::Statement {
 			else {
 				throw std::runtime_error("Unsupported WHERE clause format.");
 			}
-		}
+		}*/
 
 		// 4. Składanie QueryResult
-		MiniDb::Table::QueryResult queryResult;
+		/*MiniDb::Table::QueryResult queryResult;
 		queryResult.columns = selectedColumns;
 
 		for (const auto& row : table.rows.getRows()) {
@@ -383,9 +532,9 @@ namespace MiniDb::Statement {
 			}
 
 			queryResult.rows.addRow(Table::Row(std::move(resultRow)));
-		}
+		}*/
 
-		return std::make_unique<MiniDb::Table::QueryResult>(std::move(queryResult));
+		//return std::make_unique<MiniDb::Table::QueryResult>(std::move(queryResult));
 	}
 
 }
