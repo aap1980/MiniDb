@@ -130,6 +130,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="MiniDb.cpp" />
+    <ClCompile Include="QueryTablesOrder.cpp" />
     <ClCompile Include="src\Config\Config.cpp" />
     <ClCompile Include="src\Console\Console.cpp" />
     <ClCompile Include="src\Database\Database.cpp" />
@@ -163,6 +164,7 @@
     </CopyFileToFolders>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="QueryTablesOrder.h" />
     <ClInclude Include="src\Config\Config.h" />
     <ClInclude Include="src\Console\Console.h" />
     <ClInclude Include="src\Constants.h" />
