@@ -135,7 +135,7 @@
     <ClCompile Include="src\Statement\ParsedJoinCondition.cpp">
       <Filter>Statement</Filter>
     </ClCompile>
-    <ClCompile Include="src\Statement\SelectedColumnInfo.cpp">
+    <ClCompile Include="src\Statement\SelectedColumn.cpp">
       <Filter>Statement</Filter>
     </ClCompile>
     <ClCompile Include="src\Statement\SelectedColumns.cpp">
@@ -287,7 +287,7 @@
     <ClInclude Include="src\Statement\ParsedJoinCondition.h">
       <Filter>Statement</Filter>
     </ClInclude>
-    <ClInclude Include="src\Statement\SelectedColumnInfo.h">
+    <ClInclude Include="src\Statement\SelectedColumn.h">
       <Filter>Statement</Filter>
     </ClInclude>
     <ClInclude Include="src\Statement\SelectedColumns.h">

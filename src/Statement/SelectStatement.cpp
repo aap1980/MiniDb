@@ -239,7 +239,7 @@ namespace MiniDb::Statement {
 					MiniDb::Table::Column resultColDef = column; // Kopiujemy metadane
 					resultColDef.name = queryTableInfo.alias + "." + column.name; // Np. "u.login"
 					resultColumnsDefinition.addColumn(resultColDef);
-					MiniDb::Statement::SelectedColumnInfo selectedColumnInfo(queryTableInfo.alias, column.name, column);
+					MiniDb::Statement::SelectedColumn selectedColumnInfo(queryTableInfo.alias, column.name, column);
 					selectedColumns.addColumn(selectedColumnInfo);
 				}
 			}
@@ -259,7 +259,7 @@ namespace MiniDb::Statement {
 					const MiniDb::Table::Table& sourceTable = queryTablesOrder.getByAlias(tableAlias).table;
 					const MiniDb::Table::Column& sourceColumn = sourceTable.columns.getColumnByName(columnName);
 					resultColumnsDefinition.addColumn(sourceColumn);
-					MiniDb::Statement::SelectedColumnInfo selectedColumnInfo(tableAlias, columnName, sourceColumn);
+					MiniDb::Statement::SelectedColumn selectedColumnInfo(tableAlias, columnName, sourceColumn);
 					selectedColumns.addColumn(selectedColumnInfo);
 				}
 				else {

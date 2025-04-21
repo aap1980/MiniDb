@@ -146,7 +146,7 @@
     <ClCompile Include="src\Statement\ParsedJoinCondition.cpp" />
     <ClCompile Include="src\Statement\QueryTableInfo.cpp" />
     <ClCompile Include="src\Statement\QueryTablesOrder.cpp" />
-    <ClCompile Include="src\Statement\SelectedColumnInfo.cpp" />
+    <ClCompile Include="src\Statement\SelectedColumn.cpp" />
     <ClCompile Include="src\Statement\SelectedColumns.cpp" />
     <ClCompile Include="src\Statement\SelectStatement.cpp" />
     <ClCompile Include="src\Statement\Statement.cpp" />
@@ -203,7 +203,7 @@
     <ClInclude Include="src\Statement\ParsedJoinCondition.h" />
     <ClInclude Include="src\Statement\QueryTableInfo.h" />
     <ClInclude Include="src\Statement\QueryTablesOrder.h" />
-    <ClInclude Include="src\Statement\SelectedColumnInfo.h" />
+    <ClInclude Include="src\Statement\SelectedColumn.h" />
     <ClInclude Include="src\Statement\SelectedColumns.h" />
     <ClInclude Include="src\Statement\SelectStatement.h" />
     <ClInclude Include="src\Statement\Statement.h" />

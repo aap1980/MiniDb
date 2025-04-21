@@ -6,7 +6,7 @@ namespace MiniDb::Statement {
 		return columns.size();
 	}
 
-	void SelectedColumns::addColumn(const MiniDb::Statement::SelectedColumnInfo& column) {
+	void SelectedColumns::addColumn(const MiniDb::Statement::SelectedColumn& column) {
 		columns.push_back(column);
 	}
 
