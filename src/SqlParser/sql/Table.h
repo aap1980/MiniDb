@@ -36,7 +36,7 @@ struct TableRef {
 
   char* schema;
   char* name;
-  Alias* alias;
+  Alias* tableAlias;
 
   SelectStatement* select;
   std::vector<TableRef*>* list;

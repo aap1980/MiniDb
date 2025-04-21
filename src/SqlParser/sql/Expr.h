@@ -133,7 +133,7 @@ struct Expr {
   SelectStatement* select;
   char* name;
   char* table;
-  char* alias;
+  char* tableAlias;
   double fval;
   int64_t ival;
   int64_t ival2;

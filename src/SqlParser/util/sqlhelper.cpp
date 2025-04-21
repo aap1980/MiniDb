@@ -9,7 +9,7 @@
 namespace hsql {
 
 void printOperatorExpression(Expr* expr, uintmax_t num_indent);
-void printAlias(Alias* alias, uintmax_t num_indent);
+void printAlias(Alias* tableAlias, uintmax_t num_indent);
 
 std::ostream& operator<<(std::ostream& os, const OperatorType& op);
 std::ostream& operator<<(std::ostream& os, const DatetimeField& datetime);
@@ -57,17 +57,17 @@ void printTableRefInfo(TableRef* table, uintmax_t num_indent) {
       break;
   }
 
-  if (table->alias) {
-    printAlias(table->alias, num_indent);
+  if (table->tableAlias) {
+    printAlias(table->tableAlias, num_indent);
   }
 }
 
-void printAlias(Alias* alias, uintmax_t num_indent) {
+void printAlias(Alias* tableAlias, uintmax_t num_indent) {
   inprint("Alias", num_indent + 1);
-  inprint(alias->name, num_indent + 2);
+  inprint(tableAlias->name, num_indent + 2);
 
-  if (alias->columns) {
-    for (char* column : *(alias->columns)) {
+  if (tableAlias->columns) {
+    for (char* column : *(tableAlias->columns)) {
       inprint(column, num_indent + 3);
     }
   }
@@ -165,9 +165,9 @@ void printExpression(Expr* expr, uintmax_t num_indent) {
       std::cerr << "Unrecognized expression type " << expr->type << std::endl;
       return;
   }
-  if (expr->alias) {
+  if (expr->tableAlias) {
     inprint("Alias", num_indent + 1);
-    inprint(expr->alias, num_indent + 2);
+    inprint(expr->tableAlias, num_indent + 2);
   }
 }
 

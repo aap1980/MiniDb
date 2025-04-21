@@ -49,7 +49,7 @@ Expr::Expr(ExprType type)
       select(nullptr),
       name(nullptr),
       table(nullptr),
-      alias(nullptr),
+      tableAlias(nullptr),
       fval(0),
       ival(0),
       ival2(0),
@@ -68,7 +68,7 @@ Expr::~Expr() {
 
   free(name);
   free(table);
-  free(alias);
+  free(tableAlias);
 
   if (exprList) {
     for (Expr* e : *exprList) {
@@ -290,13 +290,13 @@ bool Expr::isLiteral() const {
          isType(kExprLiteralNull) || isType(kExprLiteralDate) || isType(kExprLiteralInterval);
 }
 
-bool Expr::hasAlias() const { return alias != nullptr; }
+bool Expr::hasAlias() const { return tableAlias != nullptr; }
 
 bool Expr::hasTable() const { return table != nullptr; }
 
 const char* Expr::getName() const {
-  if (alias)
-    return alias;
+  if (tableAlias)
+    return tableAlias;
   else
     return name;
 }

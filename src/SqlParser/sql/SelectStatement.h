@@ -43,7 +43,7 @@ struct GroupByDescription {
 struct WithDescription {
   ~WithDescription();
 
-  char* alias;
+  char* tableAlias;
   SelectStatement* select;
 };
 

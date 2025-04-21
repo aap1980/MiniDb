@@ -126,10 +126,10 @@
     <ClCompile Include="src\Table\QueryResult.cpp">
       <Filter>Table</Filter>
     </ClCompile>
-    <ClCompile Include="src\Statement\QueryTableInfo.cpp">
+    <ClCompile Include="src\Statement\QueryTable.cpp">
       <Filter>Statement</Filter>
     </ClCompile>
-    <ClCompile Include="src\Statement\QueryTablesOrder.cpp">
+    <ClCompile Include="src\Statement\QueryTables.cpp">
       <Filter>Statement</Filter>
     </ClCompile>
     <ClCompile Include="src\Statement\ParsedJoinCondition.cpp">
@@ -278,10 +278,10 @@
     <ClInclude Include="src\Table\QueryResult.h">
       <Filter>Table</Filter>
     </ClInclude>
-    <ClInclude Include="src\Statement\QueryTableInfo.h">
+    <ClInclude Include="src\Statement\QueryTable.h">
       <Filter>Statement</Filter>
     </ClInclude>
-    <ClInclude Include="src\Statement\QueryTablesOrder.h">
+    <ClInclude Include="src\Statement\QueryTables.h">
       <Filter>Statement</Filter>
     </ClInclude>
     <ClInclude Include="src\Statement\ParsedJoinCondition.h">

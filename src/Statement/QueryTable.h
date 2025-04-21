@@ -8,10 +8,10 @@
 namespace MiniDb::Statement {
 
 	// Informacje o tabeli bior¹cej udzia³ w zapytaniu
-	class QueryTableInfo {
+	class QueryTable {
 	public:
-		QueryTableInfo(const std::string& alias, const std::string& tableName, MiniDb::Table::Table& table);
-		std::string alias;
+		QueryTable(const std::string& tableAlias, const std::string& tableName, MiniDb::Table::Table& table);
+		std::string tableAlias;
 		std::string tableName;
 		MiniDb::Table::Table table;
 		std::optional<ParsedJoinCondition> joinCondition;

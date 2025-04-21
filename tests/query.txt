@@ -8,4 +8,15 @@ SELECT u.login, u.first_name, u.last_name, u.created_at FROM Users u WHERE u.use
 
 SELECT u.login, u.first_name, u.last_name, p.project_name FROM Users u INNER JOIN UserProject up ON up.user_id = u.user_id INNER JOIN Projects p ON p.project_id = up.project_id WHERE u.user_id = 2;
 
+SELECT u.login,
+       u.first_name,
+       u.last_name,
+       p.project_name
+  FROM Users u
+ INNER JOIN UserProject up
+    ON up.user_id = u.user_id
+ INNER JOIN Projects p
+    ON p.project_id = up.project_id
+ WHERE u.user_id = 2;
+
 SELECT * FROM NotExistsTable;

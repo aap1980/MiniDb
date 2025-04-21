@@ -240,7 +240,7 @@ GroupByDescription::~GroupByDescription() {
 }
 
 WithDescription::~WithDescription() {
-  free(alias);
+  free(tableAlias);
   delete select;
 }
 
@@ -339,7 +339,7 @@ Alias::~Alias() {
 
 // TableRef
 TableRef::TableRef(TableRefType type)
-    : type(type), schema(nullptr), name(nullptr), alias(nullptr), select(nullptr), list(nullptr), join(nullptr) {}
+    : type(type), schema(nullptr), name(nullptr), tableAlias(nullptr), select(nullptr), list(nullptr), join(nullptr) {}
 
 TableRef::~TableRef() {
   free(schema);
@@ -347,7 +347,7 @@ TableRef::~TableRef() {
 
   delete select;
   delete join;
-  delete alias;
+  delete tableAlias;
 
   if (list) {
     for (TableRef* table : *list) {
@@ -360,8 +360,8 @@ TableRef::~TableRef() {
 bool TableRef::hasSchema() const { return schema != nullptr; }
 
 const char* TableRef::getName() const {
-  if (alias)
-    return alias->name;
+  if (tableAlias)
+    return tableAlias->name;
   else
     return name;
 }

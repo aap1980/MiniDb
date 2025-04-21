@@ -1,11 +1,11 @@
-#include "QueryTableInfo.h"
+#include "QueryTable.h"
 
 namespace MiniDb::Statement {
 
-	QueryTableInfo::QueryTableInfo(const std::string& alias,
+	QueryTable::QueryTable(const std::string& tableAlias,
 		const std::string& tableName,
 		MiniDb::Table::Table& table)
-		: alias(alias),
+		: tableAlias(tableAlias),
 		tableName(tableName),
 		table(table) {
 	}

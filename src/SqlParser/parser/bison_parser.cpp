@@ -4690,7 +4690,7 @@ yyreduce:
                             {
   (yyval.expr) = (yyvsp[-1].expr);
   if ((yyvsp[0].alias_t)) {
-    (yyval.expr)->alias = (yyvsp[0].alias_t)->name;
+    (yyval.expr)->tableAlias = (yyvsp[0].alias_t)->name;
     (yyvsp[0].alias_t)->name = nullptr;
     delete (yyvsp[0].alias_t);
   }
@@ -5293,7 +5293,7 @@ yyreduce:
                                                                                      {
   auto tbl = new TableRef(kTableSelect);
   tbl->select = (yyvsp[-2].select_stmt);
-  tbl->alias = (yyvsp[0].alias_t);
+  tbl->tableAlias = (yyvsp[0].alias_t);
   (yyval.table) = tbl;
 }
 #line 5298 "bison_parser.cpp"
@@ -5323,7 +5323,7 @@ yyreduce:
   auto tbl = new TableRef(kTableName);
   tbl->schema = (yyvsp[-1].table_name).schema;
   tbl->name = (yyvsp[-1].table_name).name;
-  tbl->alias = (yyvsp[0].alias_t);
+  tbl->tableAlias = (yyvsp[0].alias_t);
   (yyval.table) = tbl;
 }
 #line 5328 "bison_parser.cpp"
@@ -5527,7 +5527,7 @@ yyreduce:
 #line 1335 "bison_parser.y"
                                                    {
   (yyval.with_description_t) = new WithDescription();
-  (yyval.with_description_t)->alias = (yyvsp[-2].sval);
+  (yyval.with_description_t)->tableAlias = (yyvsp[-2].sval);
   (yyval.with_description_t)->select = (yyvsp[0].select_stmt);
 }
 #line 5532 "bison_parser.cpp"
