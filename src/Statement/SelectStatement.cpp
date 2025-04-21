@@ -152,17 +152,17 @@ namespace MiniDb::Statement {
 
 			case hsql::kTableJoin: {
 				// Przypadek rekurencyjny: Znaleziono JOIN
-				const hsql::JoinDefinition* joinDef = ref->join;
+				const hsql::JoinDefinition* joinDefinition = ref->join;
 
 				// 1. Przetwórz najpierw lewą stronę JOINa (rekurencyjnie)
 				// To zapewni, że tabela bazowa i kolejne złączenia są dodawane w poprawnej kolejności
-				processTableRefRecursively(joinDef->left);
+				processTableRefRecursively(joinDefinition->left);
 
 				// 2. Sprawdź poprawność prawej strony (oczekujemy prostej tabeli)
-				if (joinDef->right == nullptr || joinDef->right->type != hsql::kTableName) {
+				if (joinDefinition->right == nullptr || joinDefinition->right->type != hsql::kTableName) {
 					throw std::runtime_error("Invalid right side of JOIN clause (expected simple table reference).");
 				}
-				const hsql::TableRef* rightTableRef = joinDef->right;
+				const hsql::TableRef* rightTableRef = joinDefinition->right;
 
 				// 3. Przetwórz prawą stronę JOINa (dodaj tabelę do struktur)
 				// Wywołanie rekurencyjne obsłuży załadowanie i dodanie tabeli
@@ -175,19 +175,19 @@ namespace MiniDb::Statement {
 				}
 
 				// Sprawdź typ JOIN (na razie tylko INNER)
-				if (joinDef->type != hsql::kJoinInner) {
+				if (joinDefinition->type != hsql::kJoinInner) {
 					throw std::runtime_error("Only INNER JOIN is supported.");
 				}
 
 				// 5. Parsuj warunek ON dla tego konkretnego JOINa
-				if (!joinDef->condition || joinDef->condition->type != hsql::kExprOperator || joinDef->condition->opType != hsql::kOpEquals ||
-					!joinDef->condition->expr || joinDef->condition->expr->type != hsql::kExprColumnRef ||
-					!joinDef->condition->expr2 || joinDef->condition->expr2->type != hsql::kExprColumnRef) {
+				if (!joinDefinition->condition || joinDefinition->condition->type != hsql::kExprOperator || joinDefinition->condition->opType != hsql::kOpEquals ||
+					!joinDefinition->condition->expr || joinDefinition->condition->expr->type != hsql::kExprColumnRef ||
+					!joinDefinition->condition->expr2 || joinDefinition->condition->expr2->type != hsql::kExprColumnRef) {
 					throw std::runtime_error("JOIN condition must be a simple column equality (alias1.col1 = alias2.col2).");
 				}
 
-				const hsql::Expr* leftColExpr = joinDef->condition->expr;
-				const hsql::Expr* rightColExpr = joinDef->condition->expr2;
+				const hsql::Expr* leftColExpr = joinDefinition->condition->expr;
+				const hsql::Expr* rightColExpr = joinDefinition->condition->expr2;
 				std::string leftAlias = leftColExpr->table ? leftColExpr->table : "";
 				std::string leftCol = leftColExpr->name;
 				std::string rightAlias = rightColExpr->table ? rightColExpr->table : "";
@@ -212,7 +212,7 @@ namespace MiniDb::Statement {
 				}
 
 				// Przypisz sparsowany warunek do informacji o ostatnio dodanej tabeli
-				ParsedJoinCondition condition(leftAlias, leftCol, rightAlias, rightCol, joinDef->condition->opType);
+				ParsedJoinCondition condition(leftAlias, leftCol, rightAlias, rightCol, joinDefinition->condition->opType);
 				queryTablesOrder.last().joinCondition = std::move(condition);
 
 				break;
@@ -355,7 +355,8 @@ namespace MiniDb::Statement {
 							// Zastosuj WHERE
 							bool whereOk = true;
 							if (whereConditionOpt) {
-								whereOk = evaluateWhereCondition(whereConditionOpt.value(), currentContext);
+								const MiniDb::Table::Table& whereTable = queryTablesOrder.getByAlias(whereConditionOpt.value().tableAlias).table;
+								whereOk = evaluateWhereCondition(whereConditionOpt.value(), currentContext, whereTable.columns);
 							}
 
 							if (whereOk) {
