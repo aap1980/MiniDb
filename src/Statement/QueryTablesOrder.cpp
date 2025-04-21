@@ -15,7 +15,7 @@ namespace MiniDb::Statement {
 		queryTableInfos.push_back(queryTableInfo);
 	}
 
-	bool MiniDb::Statement::QueryTablesOrder::hasAlias(const std::string& alias) const {
+	bool QueryTablesOrder::hasAlias(const std::string& alias) const {
 		for (const auto& qtInfo : queryTableInfos) {
 			if (qtInfo.alias == alias) {
 				return true;
@@ -24,14 +24,14 @@ namespace MiniDb::Statement {
 		return false;
 	}
 
-	MiniDb::Statement::QueryTableInfo& MiniDb::Statement::QueryTablesOrder::getByIndex(std::size_t index) {
+	MiniDb::Statement::QueryTableInfo& QueryTablesOrder::getByIndex(std::size_t index) {
 		if (index >= queryTableInfos.size()) {
 			throw std::out_of_range("Index out of range: " + index);
 		}
 		return queryTableInfos[index];
 	}
 
-	MiniDb::Statement::QueryTableInfo& MiniDb::Statement::QueryTablesOrder::getByAlias(const std::string& alias) {
+	MiniDb::Statement::QueryTableInfo& QueryTablesOrder::getByAlias(const std::string& alias) {
 		for (auto& info : queryTableInfos) {
 			if (info.alias == alias) {
 				return info;

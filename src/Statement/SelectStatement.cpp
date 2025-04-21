@@ -41,38 +41,34 @@ namespace MiniDb::Statement {
 		const JoinedRowContext& context,
 		const std::string& tableAlias,
 		const std::string& columnName,
-		const std::map<std::string, const MiniDb::Table::Columns*>& columnInfos)
+		const MiniDb::Table::Columns& columns)
 	{
+		// Aktualny wiersz dla danego aliasu w kontekście JOIN
 		auto rowIt = context.find(tableAlias);
-		auto colInfoIt = columnInfos.find(tableAlias);
-		if (rowIt == context.end() || colInfoIt == columnInfos.end()) {
-			throw std::runtime_error("Internal error: Cannot find table '" + tableAlias + "' in join context.");
+		if (rowIt == context.end()) {
+			throw std::runtime_error("Internal error: Cannot find row for table alias '" + tableAlias + "' in the current join context.");
 		}
 		const MiniDb::Table::Row* row = rowIt->second;
-		const MiniDb::Table::Columns* columns = colInfoIt->second;
-		try {
-			size_t colIndex = columns->getColumnIndexByName(columnName);
-			return row->getValueByIndex(colIndex);
-		}
-		catch (const std::runtime_error& e) {
-			throw std::runtime_error("Internal error: Cannot find column '" + columnName + "' in table '" + tableAlias + "' during context lookup.");
-		}
+
+		size_t colIndex = columns.getColumnIndexByName(columnName);
+		return row->getValueByIndex(colIndex);
 	}
 
 	// Ewaluuje warunek JOIN
 	bool evaluateJoinCondition(
-		const QueryTableInfo& queryTableInfo,
-		const JoinedRowContext& context,
-		const std::map<std::string, const MiniDb::Table::Columns*>& columnInfos)
+		MiniDb::Statement::QueryTablesOrder& queryTablesOrder,
+		const MiniDb::Statement::ParsedJoinCondition& cond,
+		const JoinedRowContext& context)
 	{
-		const ParsedJoinCondition& cond = queryTableInfo.joinCondition.value();
 		// TODO: Dodać obsługę różnych typów operatorów jeśli potrzeba
 		if (cond.opType != hsql::kOpEquals) {
 			throw std::runtime_error("Only '=' operator is supported in JOIN ON conditions.");
 		}
 
-		const std::string& leftValue = getValueFromContext(context, cond.leftTableAlias, cond.leftColumnName, columnInfos);
-		const std::string& rightValue = getValueFromContext(context, cond.rightTableAlias, cond.rightColumnName, columnInfos);
+		MiniDb::Statement::QueryTableInfo& leftTable = queryTablesOrder.getByAlias(cond.leftTableAlias);
+		const std::string& leftValue = getValueFromContext(context, cond.leftTableAlias, cond.leftColumnName, leftTable.table.columns);
+		MiniDb::Statement::QueryTableInfo& righTable = queryTablesOrder.getByAlias(cond.rightTableAlias);
+		const std::string& rightValue = getValueFromContext(context, cond.rightTableAlias, cond.rightColumnName, righTable.table.columns);
 
 		// Proste porównanie stringów - W REALNEJ BAZIE WYMAGA OBSŁUGI TYPÓW!
 		return leftValue == rightValue;
@@ -82,9 +78,9 @@ namespace MiniDb::Statement {
 	bool evaluateWhereCondition(
 		const ParsedWhereCondition& cond,
 		const JoinedRowContext& context,
-		const std::map<std::string, const MiniDb::Table::Columns*>& columnInfos)
+		const MiniDb::Table::Columns& columns)
 	{
-		const std::string& columnValueStr = getValueFromContext(context, cond.tableAlias, cond.columnName, columnInfos);
+		const std::string& columnValueStr = getValueFromContext(context, cond.tableAlias, cond.columnName, columns);
 
 		// BARDZO UPROSZCZONA EWALUACJA - WYMAGA OBSŁUGI TYPÓW I BŁĘDÓW KONWERSJI!
 		try {
@@ -346,7 +342,7 @@ namespace MiniDb::Statement {
 						if (!currentTableInfo.joinCondition.has_value()) {
 							throw std::logic_error("Internal error: Missing JOIN condition for table " + currentTableInfo.alias);
 						}
-						joinOk = evaluateJoinCondition(currentTableInfo, currentContext);
+						joinOk = evaluateJoinCondition(queryTablesOrder, currentTableInfo.joinCondition.value(), currentContext);
 					}
 
 					if (joinOk) {
@@ -367,8 +363,9 @@ namespace MiniDb::Statement {
 								std::vector<std::string> resultRowValues;
 								resultRowValues.reserve(selectedColumnsList.size());
 								for (const auto& selectedCol : selectedColumnsList) {
+									const MiniDb::Table::Table& sourceTable = queryTablesOrder.getByAlias(selectedCol.sourceTableAlias).table;
 									resultRowValues.push_back(
-										getValueFromContext(currentContext, selectedCol.sourceTableAlias, selectedCol.sourceColumnName, tableColumnsMap)
+										getValueFromContext(currentContext, selectedCol.sourceTableAlias, selectedCol.sourceColumnName, sourceTable.columns)
 									);
 								}
 								// Dodaj wiersz do wyniku używając konstruktora Row z MiniDb
