@@ -239,13 +239,13 @@ namespace MiniDb::Statement {
 		bool selectAll = _statement->selectList->size() == 1 && (*_statement->selectList)[0]->type == hsql::kExprStar;
 
 		if (selectAll) {
-			for (const auto& qtInfo : queryTablesOrder.queryTableInfos) {
-				for (const auto& colDef : qtInfo.table.columns.getColumns()) {
+			for (const auto& queryTableInfo : queryTablesOrder.queryTableInfos) {
+				for (const auto& colDef : queryTableInfo.table.columns.getColumns()) {
 					// Tworzymy nową definicję dla wyniku, potencjalnie z prefiksem aliasu dla jasności
 					MiniDb::Table::Column resultColDef = colDef; // Kopiujemy metadane
-					resultColDef.name = qtInfo.alias + "." + colDef.name; // Np. "u.login"
+					resultColDef.name = queryTableInfo.alias + "." + colDef.name; // Np. "u.login"
 					resultColumnsDefinition.addColumn(resultColDef);
-					selectedColumnsList.push_back({ qtInfo.alias, colDef.name, colDef }); // Przechowujemy oryginał
+					selectedColumnsList.push_back({ queryTableInfo.alias, colDef.name, colDef });
 				}
 			}
 		}
@@ -262,15 +262,9 @@ namespace MiniDb::Statement {
 					}
 
 					const MiniDb::Table::Table& sourceTable = queryTablesOrder.getByAlias(tableAlias).table;
-
-					try {
-						const MiniDb::Table::Column& originalColDef = sourceTable.columns.getColumnByName(columnName);
-						resultColumnsDefinition.addColumn(originalColDef); // Dodajemy do definicji wyniku
-						selectedColumnsList.push_back({ tableAlias, columnName, originalColDef }); // Zapisujemy skąd brać dane
-					}
-					catch (const std::runtime_error& e) {
-						throw std::runtime_error("Column '" + columnName + "' not found in table with alias '" + tableAlias + "'.");
-					}
+					const MiniDb::Table::Column& sourceColumn = sourceTable.columns.getColumnByName(columnName);
+					resultColumnsDefinition.addColumn(sourceColumn);
+					selectedColumnsList.push_back({ tableAlias, columnName, sourceColumn });
 				}
 				else {
 					throw std::runtime_error("Unsupported expression type in SELECT list. Only columns (alias.name) or * are supported.");
