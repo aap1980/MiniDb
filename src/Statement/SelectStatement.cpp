@@ -4,6 +4,7 @@
 #include "../Table/QueryResult.h"
 #include "../Table/Columns.h"
 #include "QueryTablesOrder.h"
+#include "SelectedColumns.h"
 #include <iostream>
 #include <optional>
 #include <functional>
@@ -24,13 +25,6 @@ namespace MiniDb::Statement {
 		std::string columnName;
 		hsql::OperatorType opType;
 		LiteralValue value;
-	};
-
-	// Informacje o kolumnie wybranej w SELECT
-	struct SelectedColumnInfo {
-		std::string sourceTableAlias;
-		std::string sourceColumnName;
-		MiniDb::Table::Column originalDefinition; // Przechowujemy oryginalną definicję
 	};
 
 	// Kontekst dla aktualnie przetwarzanego połączonego wiersza (mapa alias -> wskaźnik na Row)
@@ -230,7 +224,7 @@ namespace MiniDb::Statement {
 
 		// 3. Przetwórz listę SELECT
 		MiniDb::Table::Columns resultColumnsDefinition; // Definicje kolumn dla wyniku
-		std::vector<SelectedColumnInfo> selectedColumnsList; // Co dokładnie wybrać i skąd
+		MiniDb::Statement::SelectedColumns selectedColumns; // Co dokładnie wybrać i skąd
 
 		if (!_statement->selectList) {
 			throw std::runtime_error("Missing SELECT list.");
@@ -240,12 +234,13 @@ namespace MiniDb::Statement {
 
 		if (selectAll) {
 			for (const auto& queryTableInfo : queryTablesOrder.queryTableInfos) {
-				for (const auto& colDef : queryTableInfo.table.columns.getColumns()) {
+				for (const auto& column : queryTableInfo.table.columns.getColumns()) {
 					// Tworzymy nową definicję dla wyniku, potencjalnie z prefiksem aliasu dla jasności
-					MiniDb::Table::Column resultColDef = colDef; // Kopiujemy metadane
-					resultColDef.name = queryTableInfo.alias + "." + colDef.name; // Np. "u.login"
+					MiniDb::Table::Column resultColDef = column; // Kopiujemy metadane
+					resultColDef.name = queryTableInfo.alias + "." + column.name; // Np. "u.login"
 					resultColumnsDefinition.addColumn(resultColDef);
-					selectedColumnsList.push_back({ queryTableInfo.alias, colDef.name, colDef });
+					MiniDb::Statement::SelectedColumnInfo selectedColumnInfo(queryTableInfo.alias, column.name, column);
+					selectedColumns.addColumn(selectedColumnInfo);
 				}
 			}
 		}
@@ -264,7 +259,8 @@ namespace MiniDb::Statement {
 					const MiniDb::Table::Table& sourceTable = queryTablesOrder.getByAlias(tableAlias).table;
 					const MiniDb::Table::Column& sourceColumn = sourceTable.columns.getColumnByName(columnName);
 					resultColumnsDefinition.addColumn(sourceColumn);
-					selectedColumnsList.push_back({ tableAlias, columnName, sourceColumn });
+					MiniDb::Statement::SelectedColumnInfo selectedColumnInfo(tableAlias, columnName, sourceColumn);
+					selectedColumns.addColumn(selectedColumnInfo);
 				}
 				else {
 					throw std::runtime_error("Unsupported expression type in SELECT list. Only columns (alias.name) or * are supported.");
@@ -356,11 +352,11 @@ namespace MiniDb::Statement {
 							if (whereOk) {
 								// Zbuduj wiersz wynikowy
 								std::vector<std::string> resultRowValues;
-								resultRowValues.reserve(selectedColumnsList.size());
-								for (const auto& selectedCol : selectedColumnsList) {
-									const MiniDb::Table::Table& sourceTable = queryTablesOrder.getByAlias(selectedCol.sourceTableAlias).table;
+								resultRowValues.reserve(selectedColumns.size());
+								for (const auto& column : selectedColumns.columns) {
+									const MiniDb::Table::Table& table = queryTablesOrder.getByAlias(column.tableAlias).table;
 									resultRowValues.push_back(
-										getValueFromContext(currentContext, selectedCol.sourceTableAlias, selectedCol.sourceColumnName, sourceTable.columns)
+										getValueFromContext(currentContext, column.tableAlias, column.columnName, table.columns)
 									);
 								}
 								// Dodaj wiersz do wyniku używając konstruktora Row z MiniDb

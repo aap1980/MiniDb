@@ -135,6 +135,12 @@
     <ClCompile Include="src\Statement\ParsedJoinCondition.cpp">
       <Filter>Statement</Filter>
     </ClCompile>
+    <ClCompile Include="src\Statement\SelectedColumnInfo.cpp">
+      <Filter>Statement</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Statement\SelectedColumns.cpp">
+      <Filter>Statement</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Table\TableDataWriter.h">
@@ -279,6 +285,12 @@
       <Filter>Statement</Filter>
     </ClInclude>
     <ClInclude Include="src\Statement\ParsedJoinCondition.h">
+      <Filter>Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Statement\SelectedColumnInfo.h">
+      <Filter>Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Statement\SelectedColumns.h">
       <Filter>Statement</Filter>
     </ClInclude>
   </ItemGroup>
