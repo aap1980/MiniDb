@@ -3,6 +3,7 @@
 #include "../SqlParser/SQLParser.h"
 #include "../Table/QueryResult.h"
 #include "../Table/Columns.h"
+#include "QueryTablesOrder.h"
 #include <iostream>
 #include <optional>
 #include <functional>
@@ -15,15 +16,6 @@ namespace MiniDb::Statement {
 		_parserResult = std::move(parserResult);
 		_statement = static_cast<const hsql::SelectStatement*>(_parserResult->getStatement(0));
 	}
-
-	// Reprezentuje sparsowany warunek JOIN ON
-	struct ParsedJoinCondition {
-		std::string leftTableAlias;
-		std::string leftColumnName;
-		std::string rightTableAlias;
-		std::string rightColumnName;
-		hsql::OperatorType opType = hsql::kOpEquals;
-	};
 
 	// Reprezentuje sparsowany warunek WHERE
 	using LiteralValue = std::variant<long, double, std::string>; // Użyj std::variant lub podobnego
@@ -39,14 +31,6 @@ namespace MiniDb::Statement {
 		std::string sourceTableAlias;
 		std::string sourceColumnName;
 		MiniDb::Table::Column originalDefinition; // Przechowujemy oryginalną definicję
-	};
-
-	// Informacje o tabeli biorącej udział w zapytaniu
-	struct QueryTableInfo {
-		std::string alias;
-		std::string tableName;
-		MiniDb::Table::Table table;
-		std::optional<ParsedJoinCondition> joinCondition; // Warunek łączący z *poprzednią* tabelą w kolejności
 	};
 
 	// Kontekst dla aktualnie przetwarzanego połączonego wiersza (mapa alias -> wskaźnik na Row)
@@ -77,10 +61,11 @@ namespace MiniDb::Statement {
 
 	// Ewaluuje warunek JOIN
 	bool evaluateJoinCondition(
-		const ParsedJoinCondition& cond,
+		const QueryTableInfo& queryTableInfo,
 		const JoinedRowContext& context,
 		const std::map<std::string, const MiniDb::Table::Columns*>& columnInfos)
 	{
+		const ParsedJoinCondition& cond = queryTableInfo.joinCondition.value();
 		// TODO: Dodać obsługę różnych typów operatorów jeśli potrzeba
 		if (cond.opType != hsql::kOpEquals) {
 			throw std::runtime_error("Only '=' operator is supported in JOIN ON conditions.");
@@ -141,9 +126,7 @@ namespace MiniDb::Statement {
 		}
 
 		// 1. Przygotuj struktury do przechowywania informacji o zapytaniu
-		std::vector<QueryTableInfo> queryTablesOrder; // Kolejność tabel jak w zapytaniu (FROM, JOIN1, JOIN2...)
-		std::map<std::string, size_t> aliasToIndex; // Mapowanie aliasu na indeks w queryTablesOrder
-		std::map<std::string, const MiniDb::Table::Columns*> tableColumnsMap; // Cache definicji kolumn per alias
+		MiniDb::Statement::QueryTablesOrder queryTablesOrder; // Kolejność tabel jak w zapytaniu (FROM, JOIN1, JOIN2...)
 
 		// 2. Rekurencyjne przetwarzanie FROM/JOIN
 		std::function<void(const hsql::TableRef*)> processTableRefRecursively;
@@ -161,22 +144,13 @@ namespace MiniDb::Statement {
 				std::string tableName = tableRef->name;
 				std::string tableAlias = (tableRef->alias != nullptr) ? tableRef->alias->name : tableName;
 
-				if (aliasToIndex.count(tableAlias)) {
-					// Ten alias już istnieje (może się zdarzyć, jeśli jest to prawa strona JOINa,
-					// która została już przetworzona - chociaż logika powinna temu zapobiegać).
-					// Lub jest to faktyczny duplikat w zapytaniu.
-					throw std::runtime_error("Duplicate table alias detected: " + tableAlias);
-				}
-
-				MiniDb::Table::Table table = database.getTable(tableName);
+				MiniDb::Table::Table& table = database.getTable(tableName);
 				table.loadDataFromFile();
 
-				size_t currentIndex = queryTablesOrder.size();
-				aliasToIndex[tableAlias] = currentIndex;
-				// Dodajemy tabelę bez warunku JOIN (bo to albo tabela bazowa, albo prawa strona JOINa,
-				// której warunek zostanie dodany później w sekcji kTableJoin)
-				queryTablesOrder.push_back({ tableAlias, tableName, std::move(table), std::nullopt });
-				tableColumnsMap[tableAlias] = &queryTablesOrder[currentIndex].table.columns;
+				// Dodajemy tabelę bez warunku JOIN, bo to albo tabela bazowa, albo prawa strona JOINa,
+				// której warunek zostanie dodany później w sekcji kTableJoin
+				QueryTableInfo queryTableInfo(tableAlias, tableName, table);
+				queryTablesOrder.addQueryTableInfo(queryTableInfo);
 				break;
 			}
 
@@ -200,10 +174,9 @@ namespace MiniDb::Statement {
 
 				// 4. Po przetworzeniu prawej strony, tabela powinna być ostatnią w queryTablesOrder.
 				// Teraz dodajmy do niej warunek JOIN.
-				if (queryTablesOrder.empty()) {
+				if (queryTablesOrder.queryTableInfos.empty()) {
 					throw std::logic_error("Internal error: queryTablesOrder is empty after processing JOIN's right side.");
 				}
-				QueryTableInfo& newlyAddedTableInfo = queryTablesOrder.back(); // Ostatnio dodana tabela (z prawej strony JOIN)
 
 				// Sprawdź typ JOIN (na razie tylko INNER)
 				if (joinDef->type != hsql::kJoinInner) {
@@ -228,27 +201,25 @@ namespace MiniDb::Statement {
 					throw std::runtime_error("Columns in JOIN ON condition must be qualified with table aliases.");
 				}
 
-				// Sprawdź, czy aliasy w warunku ON istnieją w mapie `aliasToIndex`
-				// (powinny istnieć, bo obie strony JOIN zostały już przetworzone)
-				if (!aliasToIndex.count(leftAlias)) {
+				// Sprawdź, czy aliasy w warunku ON istnieją
+				if (!queryTablesOrder.hasAlias(leftAlias)) {
 					throw std::runtime_error("Unknown table alias '" + leftAlias + "' in JOIN ON condition.");
 				}
-				if (!aliasToIndex.count(rightAlias)) {
+				if (!queryTablesOrder.hasAlias(rightAlias)) {
 					throw std::runtime_error("Unknown table alias '" + rightAlias + "' in JOIN ON condition.");
 				}
-				// Upewnij się, że jedna strona warunku odnosi się do tabeli dodanej w tym kroku (newlyAddedTableInfo)
-				bool conditionLinksNewTable = (leftAlias == newlyAddedTableInfo.alias || rightAlias == newlyAddedTableInfo.alias);
+
+				// Upewnij się, że jedna strona warunku odnosi się do tabeli dodanej w tym kroku
+				bool conditionLinksNewTable = (leftAlias == queryTablesOrder.last().alias || rightAlias == queryTablesOrder.last().alias);
 				if (!conditionLinksNewTable) {
-					throw std::runtime_error("JOIN ON condition for table '" + newlyAddedTableInfo.alias + "' does not reference it.");
+					throw std::runtime_error("JOIN ON condition for table '" + queryTablesOrder.last().alias + "' does not reference it.");
 				}
 
-
-				ParsedJoinCondition condition = { leftAlias, leftCol, rightAlias, rightCol, joinDef->condition->opType };
-
 				// Przypisz sparsowany warunek do informacji o ostatnio dodanej tabeli
-				newlyAddedTableInfo.joinCondition = std::move(condition);
+				ParsedJoinCondition condition(leftAlias, leftCol, rightAlias, rightCol, joinDef->condition->opType);
+				queryTablesOrder.last().joinCondition = std::move(condition);
 
-				break; // Koniec obsługi kTableJoin
+				break;
 			}
 
 								 // Obsługa innych, nieimplementowanych typów TableRef
@@ -272,7 +243,7 @@ namespace MiniDb::Statement {
 		bool selectAll = _statement->selectList->size() == 1 && (*_statement->selectList)[0]->type == hsql::kExprStar;
 
 		if (selectAll) {
-			for (const auto& qtInfo : queryTablesOrder) {
+			for (const auto& qtInfo : queryTablesOrder.queryTableInfos) {
 				for (const auto& colDef : qtInfo.table.columns.getColumns()) {
 					// Tworzymy nową definicję dla wyniku, potencjalnie z prefiksem aliasu dla jasności
 					MiniDb::Table::Column resultColDef = colDef; // Kopiujemy metadane
@@ -294,13 +265,7 @@ namespace MiniDb::Statement {
 						throw std::runtime_error("Column '" + columnName + "' in SELECT list must be qualified with a table alias when using JOIN.");
 					}
 
-					auto aliasIt = aliasToIndex.find(tableAlias);
-					if (aliasIt == aliasToIndex.end()) {
-						throw std::runtime_error("Unknown table alias '" + tableAlias + "' in SELECT list.");
-					}
-
-					size_t tableIndex = aliasIt->second;
-					const MiniDb::Table::Table& sourceTable = queryTablesOrder[tableIndex].table;
+					const MiniDb::Table::Table& sourceTable = queryTablesOrder.getByAlias(tableAlias).table;
 
 					try {
 						const MiniDb::Table::Column& originalColDef = sourceTable.columns.getColumnByName(columnName);
@@ -334,8 +299,8 @@ namespace MiniDb::Statement {
 				if (tableAlias.empty()) {
 					throw std::runtime_error("Column '" + colName + "' in WHERE clause must be qualified with a table alias when using JOIN.");
 				}
-				if (!aliasToIndex.count(tableAlias)) {
-					throw std::runtime_error("Unknown table alias '" + tableAlias + "' in WHERE clause.");
+				if (!queryTablesOrder.hasAlias(tableAlias)) {
+					throw std::runtime_error("Unknown table alias '" + tableAlias + "' in JOIN ON condition.");
 				}
 
 				LiteralValue literal;
@@ -370,10 +335,10 @@ namespace MiniDb::Statement {
 		std::function<void(size_t, JoinedRowContext)> processJoinLevel =
 			[&](size_t currentTableIndex, JoinedRowContext currentContext)
 			{
-				const QueryTableInfo& currentTableInfo = queryTablesOrder[currentTableIndex];
+				const QueryTableInfo& currentTableInfo = queryTablesOrder.getByIndex(currentTableIndex);
 
 				for (const MiniDb::Table::Row& row : currentTableInfo.table.rows.getRows()) {
-					currentContext[currentTableInfo.alias] = &row; // Aktualizujemy kontekst
+					currentContext[currentTableInfo.alias] = &row;
 
 					bool joinOk = true;
 					if (currentTableIndex > 0) { // Sprawdź warunek JOIN dla tabel > 0
@@ -381,7 +346,7 @@ namespace MiniDb::Statement {
 						if (!currentTableInfo.joinCondition.has_value()) {
 							throw std::logic_error("Internal error: Missing JOIN condition for table " + currentTableInfo.alias);
 						}
-						joinOk = evaluateJoinCondition(currentTableInfo.joinCondition.value(), currentContext, tableColumnsMap);
+						joinOk = evaluateJoinCondition(currentTableInfo, currentContext);
 					}
 
 					if (joinOk) {
@@ -394,7 +359,7 @@ namespace MiniDb::Statement {
 							// Zastosuj WHERE
 							bool whereOk = true;
 							if (whereConditionOpt) {
-								whereOk = evaluateWhereCondition(whereConditionOpt.value(), currentContext, tableColumnsMap);
+								whereOk = evaluateWhereCondition(whereConditionOpt.value(), currentContext);
 							}
 
 							if (whereOk) {
@@ -418,7 +383,7 @@ namespace MiniDb::Statement {
 			};
 
 		// Rozpocznij rekurencję od pierwszej tabeli (indeks 0), jeśli istnieją tabele
-		if (!queryTablesOrder.empty()) {
+		if (!queryTablesOrder.queryTableInfos.empty()) {
 			JoinedRowContext initialContext;
 			processJoinLevel(0, initialContext);
 		}

@@ -5,6 +5,7 @@
 
 namespace MiniDb::Statement {
 
+	// Reprezentuje sparsowany warunek JOIN ON
 	class ParsedJoinCondition {
 	public:
 		ParsedJoinCondition(const std::string& leftTableAlias,
@@ -13,18 +14,11 @@ namespace MiniDb::Statement {
 			const std::string& rightColumnName,
 			hsql::OperatorType opType = hsql::kOpEquals);
 
-		const std::string& leftTableAlias() const;
-		const std::string& leftColumnName() const;
-		const std::string& rightTableAlias() const;
-		const std::string& rightColumnName() const;
-		hsql::OperatorType opType() const;
-
-	private:
-		std::string _leftTableAlias;
-		std::string _leftColumnName;
-		std::string _rightTableAlias;
-		std::string _rightColumnName;
-		hsql::OperatorType _opType;
+		std::string leftTableAlias;
+		std::string leftColumnName;
+		std::string rightTableAlias;
+		std::string rightColumnName;
+		hsql::OperatorType opType;
 	};
 
 }
