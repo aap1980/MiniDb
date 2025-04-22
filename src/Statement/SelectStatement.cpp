@@ -43,7 +43,7 @@ namespace MiniDb::Statement {
 
 	// Ewaluuje warunek JOIN
 	bool evaluateJoinCondition(
-		MiniDb::Statement::QueryTables& queryTablesOrder,
+		MiniDb::Statement::QueryTables& queryTables,
 		const MiniDb::Statement::JoinCondition& joinCondition,
 		const ActiveJoinRowsMap& activeRowsMap)
 	{
@@ -51,9 +51,9 @@ namespace MiniDb::Statement {
 			throw std::runtime_error("Only '=' operator is supported in JOIN ON conditions.");
 		}
 
-		MiniDb::Statement::QueryTable& leftTable = queryTablesOrder.getByAlias(joinCondition.leftTableAlias);
+		MiniDb::Statement::QueryTable& leftTable = queryTables.getByAlias(joinCondition.leftTableAlias);
 		const std::string& leftValue = getValueFromContext(activeRowsMap, joinCondition.leftTableAlias, joinCondition.leftColumnName, leftTable.table.columns);
-		MiniDb::Statement::QueryTable& righTable = queryTablesOrder.getByAlias(joinCondition.rightTableAlias);
+		MiniDb::Statement::QueryTable& righTable = queryTables.getByAlias(joinCondition.rightTableAlias);
 		const std::string& rightValue = getValueFromContext(activeRowsMap, joinCondition.rightTableAlias, joinCondition.rightColumnName, righTable.table.columns);
 
 		// Proste porównanie stringów - W REALNEJ BAZIE WYMAGA OBSŁUGI TYPÓW!
