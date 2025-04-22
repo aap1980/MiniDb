@@ -79,7 +79,7 @@ void printOperatorExpression(Expr* expr, uintmax_t num_indent) {
     return;
   }
 
-  inprint(expr->opType, num_indent);
+  inprint(expr->operatorType, num_indent);
 
   printExpression(expr->expr, num_indent + 1);
   if (expr->expr2) {

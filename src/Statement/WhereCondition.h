@@ -12,7 +12,7 @@ namespace MiniDb::Statement {
 	public:
 		WhereCondition(std::string tableAlias,
 			std::string columnName,
-			hsql::OperatorType opType,
+			hsql::OperatorType operatorType,
 			LiteralValue value);
 
 		std::string tableAlias;

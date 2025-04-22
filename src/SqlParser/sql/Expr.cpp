@@ -56,7 +56,7 @@ Expr::Expr(ExprType type)
       datetimeField(kDatetimeNone),
       columnType(DataType::UNKNOWN, 0),
       isBoolLiteral(false),
-      opType(kOpNone),
+      operatorType(kOpNone),
       distinct(false),
       windowDescription(nullptr) {}
 
@@ -85,7 +85,7 @@ Expr* Expr::make(ExprType type) {
 
 Expr* Expr::makeOpUnary(OperatorType op, Expr* expr) {
   Expr* e = new Expr(kExprOperator);
-  e->opType = op;
+  e->operatorType = op;
   e->expr = expr;
   e->expr2 = nullptr;
   return e;
@@ -93,7 +93,7 @@ Expr* Expr::makeOpUnary(OperatorType op, Expr* expr) {
 
 Expr* Expr::makeOpBinary(Expr* expr1, OperatorType op, Expr* expr2) {
   Expr* e = new Expr(kExprOperator);
-  e->opType = op;
+  e->operatorType = op;
   e->expr = expr1;
   e->expr2 = expr2;
   return e;
@@ -102,7 +102,7 @@ Expr* Expr::makeOpBinary(Expr* expr1, OperatorType op, Expr* expr2) {
 Expr* Expr::makeBetween(Expr* expr, Expr* left, Expr* right) {
   Expr* e = new Expr(kExprOperator);
   e->expr = expr;
-  e->opType = kOpBetween;
+  e->operatorType = kOpBetween;
   e->exprList = new std::vector<Expr*>();
   e->exprList->push_back(left);
   e->exprList->push_back(right);
@@ -113,7 +113,7 @@ Expr* Expr::makeCaseList(Expr* caseListElement) {
   Expr* e = new Expr(kExprOperator);
   // Case list expressions are temporary and will be integrated into the case
   // expressions exprList - thus assign operator type kOpNone
-  e->opType = kOpNone;
+  e->operatorType = kOpNone;
   e->exprList = new std::vector<Expr*>();
   e->exprList->push_back(caseListElement);
   return e;
@@ -121,7 +121,7 @@ Expr* Expr::makeCaseList(Expr* caseListElement) {
 
 Expr* Expr::makeCaseListElement(Expr* when, Expr* then) {
   Expr* e = new Expr(kExprOperator);
-  e->opType = kOpCaseListElement;
+  e->operatorType = kOpCaseListElement;
   e->expr = when;
   e->expr2 = then;
   return e;
@@ -134,7 +134,7 @@ Expr* Expr::caseListAppend(Expr* caseList, Expr* caseListElement) {
 
 Expr* Expr::makeCase(Expr* expr, Expr* caseList, Expr* elseExpr) {
   Expr* e = new Expr(kExprOperator);
-  e->opType = kOpCase;
+  e->operatorType = kOpCase;
   e->expr = expr;
   e->expr2 = elseExpr;
   e->exprList = caseList->exprList;
@@ -246,14 +246,14 @@ Expr* Expr::makeSelect(SelectStatement* select) {
 
 Expr* Expr::makeExists(SelectStatement* select) {
   Expr* e = new Expr(kExprOperator);
-  e->opType = kOpExists;
+  e->operatorType = kOpExists;
   e->select = select;
   return e;
 }
 
 Expr* Expr::makeInOperator(Expr* expr, std::vector<Expr*>* exprList) {
   Expr* e = new Expr(kExprOperator);
-  e->opType = kOpIn;
+  e->operatorType = kOpIn;
   e->expr = expr;
   e->exprList = exprList;
 
@@ -262,7 +262,7 @@ Expr* Expr::makeInOperator(Expr* expr, std::vector<Expr*>* exprList) {
 
 Expr* Expr::makeInOperator(Expr* expr, SelectStatement* select) {
   Expr* e = new Expr(kExprOperator);
-  e->opType = kOpIn;
+  e->operatorType = kOpIn;
   e->expr = expr;
   e->select = select;
 

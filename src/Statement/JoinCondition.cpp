@@ -6,12 +6,12 @@ namespace MiniDb::Statement {
 		const std::string& leftColumnName,
 		const std::string& rightTableAlias,
 		const std::string& rightColumnName,
-		hsql::OperatorType opType)
+		hsql::OperatorType operatorType)
 		: leftTableAlias(leftTableAlias),
 		leftColumnName(leftColumnName),
 		rightTableAlias(rightTableAlias),
 		rightColumnName(rightColumnName),
-		opType(opType) {
+		operatorType(operatorType) {
 	}
 
 }

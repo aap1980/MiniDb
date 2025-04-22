@@ -11,13 +11,13 @@ namespace MiniDb::Statement {
 			const std::string& leftColumnName,
 			const std::string& rightTableAlias,
 			const std::string& rightColumnName,
-			hsql::OperatorType opType = hsql::kOpEquals);
+			hsql::OperatorType operatorType = hsql::kOpEquals);
 
 		std::string leftTableAlias;
 		std::string leftColumnName;
 		std::string rightTableAlias;
 		std::string rightColumnName;
-		hsql::OperatorType opType;
+		hsql::OperatorType operatorType;
 	};
 
 }

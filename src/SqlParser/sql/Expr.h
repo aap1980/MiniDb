@@ -141,7 +141,7 @@ struct Expr {
   ColumnType columnType;
   bool isBoolLiteral;
 
-  OperatorType opType;
+  OperatorType operatorType;
   bool distinct;
 
   WindowDescription* windowDescription;
