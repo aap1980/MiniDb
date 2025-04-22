@@ -5,10 +5,9 @@
 
 namespace MiniDb::Statement {
 
-	// Reprezentuje sparsowany warunek JOIN ON
-	class ParsedJoinCondition {
+	class JoinCondition {
 	public:
-		ParsedJoinCondition(const std::string& leftTableAlias,
+		JoinCondition(const std::string& leftTableAlias,
 			const std::string& leftColumnName,
 			const std::string& rightTableAlias,
 			const std::string& rightColumnName,

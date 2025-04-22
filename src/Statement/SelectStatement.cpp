@@ -5,6 +5,8 @@
 #include "../Table/Columns.h"
 #include "QueryTables.h"
 #include "SelectedColumns.h"
+#include "JoinCondition.h"
+#include "WhereCondition.h"
 #include <iostream>
 #include <optional>
 #include <functional>
@@ -17,15 +19,6 @@ namespace MiniDb::Statement {
 		_parserResult = std::move(parserResult);
 		_statement = static_cast<const hsql::SelectStatement*>(_parserResult->getStatement(0));
 	}
-
-	// Reprezentuje sparsowany warunek WHERE
-	using LiteralValue = std::variant<long, double, std::string>; // Użyj std::variant lub podobnego
-	struct ParsedWhereCondition {
-		std::string tableAlias;
-		std::string columnName;
-		hsql::OperatorType opType;
-		LiteralValue value;
-	};
 
 	// Kontekst dla aktualnie przetwarzanego połączonego wiersza (mapa alias -> wskaźnik na Row)
 	using JoinedRowContext = std::map<std::string, const MiniDb::Table::Row*>;
@@ -51,7 +44,7 @@ namespace MiniDb::Statement {
 	// Ewaluuje warunek JOIN
 	bool evaluateJoinCondition(
 		MiniDb::Statement::QueryTables& queryTablesOrder,
-		const MiniDb::Statement::ParsedJoinCondition& cond,
+		const MiniDb::Statement::JoinCondition& cond,
 		const JoinedRowContext& context)
 	{
 		// TODO: Dodać obsługę różnych typów operatorów jeśli potrzeba
@@ -70,7 +63,7 @@ namespace MiniDb::Statement {
 
 	// Ewaluuje warunek WHERE
 	bool evaluateWhereCondition(
-		const ParsedWhereCondition& cond,
+		const MiniDb::Statement::WhereCondition& cond,
 		const JoinedRowContext& context,
 		const MiniDb::Table::Columns& columns)
 	{
@@ -78,10 +71,10 @@ namespace MiniDb::Statement {
 
 		// BARDZO UPROSZCZONA EWALUACJA - WYMAGA OBSŁUGI TYPÓW I BŁĘDÓW KONWERSJI!
 		try {
-			if (std::holds_alternative<long>(cond.value)) {
-				long literalValue = std::get<long>(cond.value);
+			if (std::holds_alternative<long>(cond.literalValue)) {
+				long literalValue = std::get<long>(cond.literalValue);
 				long columnValue = std::stol(columnValueStr);
-				switch (cond.opType) {
+				switch (cond.operatorType) {
 				case hsql::kOpEquals: return columnValue == literalValue;
 				case hsql::kOpNotEquals: return columnValue != literalValue;
 				case hsql::kOpLess: return columnValue < literalValue;
@@ -91,9 +84,9 @@ namespace MiniDb::Statement {
 				default: throw std::runtime_error("Unsupported WHERE operator for INT.");
 				}
 			}
-			else if (std::holds_alternative<std::string>(cond.value)) {
-				const std::string& literalValue = std::get<std::string>(cond.value);
-				switch (cond.opType) {
+			else if (std::holds_alternative<std::string>(cond.literalValue)) {
+				const std::string& literalValue = std::get<std::string>(cond.literalValue);
+				switch (cond.operatorType) {
 				case hsql::kOpEquals: return columnValueStr == literalValue;
 				case hsql::kOpNotEquals: return columnValueStr != literalValue;
 				default: throw std::runtime_error("Unsupported WHERE operator for STRING.");
@@ -104,9 +97,9 @@ namespace MiniDb::Statement {
 				throw std::runtime_error("Unsupported literal type in WHERE clause.");
 			}
 		}
-		catch (const std::exception& e) { // Łapie błędy konwersji (np. stol) lub inne
+		catch (const std::exception& e) {
 			std::cerr << "Warning: Type conversion or comparison error in WHERE for value '" << columnValueStr << "': " << e.what() << std::endl;
-			return false; // Błąd = warunek niespełniony
+			return false;
 		}
 	}
 
@@ -206,7 +199,7 @@ namespace MiniDb::Statement {
 				}
 
 				// Przypisz sparsowany warunek do informacji o ostatnio dodanej tabeli
-				ParsedJoinCondition condition(leftAlias, leftCol, rightAlias, rightCol, joinDefinition->condition->opType);
+				JoinCondition condition(leftAlias, leftCol, rightAlias, rightCol, joinDefinition->condition->opType);
 				queryTablesOrder.last().joinCondition = std::move(condition);
 
 				break;
@@ -269,7 +262,7 @@ namespace MiniDb::Statement {
 		}
 
 		// 4. Przetwórz klauzulę WHERE
-		std::optional<ParsedWhereCondition> whereConditionOpt;
+		std::optional<MiniDb::Statement::WhereCondition> whereConditionOptional;
 
 		if (_statement->whereClause != nullptr) {
 			const auto* clause = _statement->whereClause;
@@ -305,7 +298,7 @@ namespace MiniDb::Statement {
 					throw std::runtime_error("Unsupported literal type in WHERE clause.");
 				}
 
-				whereConditionOpt.emplace(ParsedWhereCondition{ tableAlias, colName, clause->opType, literal });
+				whereConditionOptional.emplace(MiniDb::Statement::WhereCondition(tableAlias, colName, clause->opType, literal));
 
 			}
 			else {
@@ -344,9 +337,9 @@ namespace MiniDb::Statement {
 							// Ostatnia tabela - mamy pełny połączony wiersz (w currentContext)
 							// Zastosuj WHERE
 							bool whereOk = true;
-							if (whereConditionOpt) {
-								const MiniDb::Table::Table& whereTable = queryTablesOrder.getByAlias(whereConditionOpt.value().tableAlias).table;
-								whereOk = evaluateWhereCondition(whereConditionOpt.value(), currentContext, whereTable.columns);
+							if (whereConditionOptional) {
+								const MiniDb::Table::Table& whereTable = queryTablesOrder.getByAlias(whereConditionOptional.value().tableAlias).table;
+								whereOk = evaluateWhereCondition(whereConditionOptional.value(), currentContext, whereTable.columns);
 							}
 
 							if (whereOk) {

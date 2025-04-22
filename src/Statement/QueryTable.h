@@ -2,7 +2,7 @@
 
 #include <string>
 #include <optional>
-#include "ParsedJoinCondition.h"
+#include "JoinCondition.h"
 #include "../Table/Table.h"
 
 namespace MiniDb::Statement {
@@ -14,7 +14,7 @@ namespace MiniDb::Statement {
 		std::string tableAlias;
 		std::string tableName;
 		MiniDb::Table::Table table;
-		std::optional<ParsedJoinCondition> joinCondition;
+		std::optional<JoinCondition> joinCondition;
 	};
 
 }

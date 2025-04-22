@@ -132,13 +132,16 @@
     <ClCompile Include="src\Statement\QueryTables.cpp">
       <Filter>Statement</Filter>
     </ClCompile>
-    <ClCompile Include="src\Statement\ParsedJoinCondition.cpp">
+    <ClCompile Include="src\Statement\JoinCondition.cpp">
       <Filter>Statement</Filter>
     </ClCompile>
     <ClCompile Include="src\Statement\SelectedColumn.cpp">
       <Filter>Statement</Filter>
     </ClCompile>
     <ClCompile Include="src\Statement\SelectedColumns.cpp">
+      <Filter>Statement</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Statement\WhereCondition.cpp">
       <Filter>Statement</Filter>
     </ClCompile>
   </ItemGroup>
@@ -284,13 +287,16 @@
     <ClInclude Include="src\Statement\QueryTables.h">
       <Filter>Statement</Filter>
     </ClInclude>
-    <ClInclude Include="src\Statement\ParsedJoinCondition.h">
+    <ClInclude Include="src\Statement\JoinCondition.h">
       <Filter>Statement</Filter>
     </ClInclude>
     <ClInclude Include="src\Statement\SelectedColumn.h">
       <Filter>Statement</Filter>
     </ClInclude>
     <ClInclude Include="src\Statement\SelectedColumns.h">
+      <Filter>Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Statement\WhereCondition.h">
       <Filter>Statement</Filter>
     </ClInclude>
   </ItemGroup>

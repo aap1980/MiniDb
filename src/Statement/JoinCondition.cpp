@@ -1,8 +1,8 @@
-#include "ParsedJoinCondition.h"
+#include "JoinCondition.h"
 
 namespace MiniDb::Statement {
 
-	ParsedJoinCondition::ParsedJoinCondition(const std::string& leftTableAlias,
+	JoinCondition::JoinCondition(const std::string& leftTableAlias,
 		const std::string& leftColumnName,
 		const std::string& rightTableAlias,
 		const std::string& rightColumnName,
