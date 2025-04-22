@@ -9,7 +9,7 @@
 namespace hsql {
 
 void printOperatorExpression(Expr* expr, uintmax_t num_indent);
-void printAlias(Alias* tableAlias, uintmax_t num_indent);
+void printAlias(Alias* alias, uintmax_t num_indent);
 
 std::ostream& operator<<(std::ostream& os, const OperatorType& op);
 std::ostream& operator<<(std::ostream& os, const DatetimeField& datetime);
@@ -57,17 +57,17 @@ void printTableRefInfo(TableRef* table, uintmax_t num_indent) {
       break;
   }
 
-  if (table->tableAlias) {
-    printAlias(table->tableAlias, num_indent);
+  if (table->alias) {
+    printAlias(table->alias, num_indent);
   }
 }
 
-void printAlias(Alias* tableAlias, uintmax_t num_indent) {
+void printAlias(Alias* alias, uintmax_t num_indent) {
   inprint("Alias", num_indent + 1);
-  inprint(tableAlias->name, num_indent + 2);
+  inprint(alias->name, num_indent + 2);
 
-  if (tableAlias->columns) {
-    for (char* column : *(tableAlias->columns)) {
+  if (alias->columns) {
+    for (char* column : *(alias->columns)) {
       inprint(column, num_indent + 3);
     }
   }
@@ -79,7 +79,7 @@ void printOperatorExpression(Expr* expr, uintmax_t num_indent) {
     return;
   }
 
-  inprint(expr->operatorType, num_indent);
+  inprint(expr->opType, num_indent);
 
   printExpression(expr->expr, num_indent + 1);
   if (expr->expr2) {
@@ -165,9 +165,9 @@ void printExpression(Expr* expr, uintmax_t num_indent) {
       std::cerr << "Unrecognized expression type " << expr->type << std::endl;
       return;
   }
-  if (expr->tableAlias) {
+  if (expr->alias) {
     inprint("Alias", num_indent + 1);
-    inprint(expr->tableAlias, num_indent + 2);
+    inprint(expr->alias, num_indent + 2);
   }
 }
 
@@ -334,7 +334,7 @@ void printImportStatementInfo(const ImportStatement* stmt, uintmax_t num_indent)
       inprint("AUTO", num_indent + 1);
       break;
   }
-  inprint(stmt->_tableName, num_indent + 1);
+  inprint(stmt->tableName, num_indent + 1);
   if (stmt->whereClause) {
     inprint("WHERE:", num_indent + 1);
     printExpression(stmt->whereClause, num_indent + 2);
@@ -359,8 +359,8 @@ void printExportStatementInfo(const ExportStatement* stmt, uintmax_t num_indent)
       break;
   }
 
-  if (stmt->_tableName) {
-    inprint(stmt->_tableName, num_indent + 1);
+  if (stmt->tableName) {
+    inprint(stmt->tableName, num_indent + 1);
   } else {
     printSelectStatementInfo(stmt->select, num_indent + 1);
   }
@@ -368,13 +368,13 @@ void printExportStatementInfo(const ExportStatement* stmt, uintmax_t num_indent)
 
 void printCreateStatementInfo(const CreateStatement* stmt, uintmax_t num_indent) {
   inprint("CreateStatement", num_indent);
-  inprint(stmt->_tableName, num_indent + 1);
+  inprint(stmt->tableName, num_indent + 1);
   if (stmt->filePath) inprint(stmt->filePath, num_indent + 1);
 }
 
 void printInsertStatementInfo(const InsertStatement* stmt, uintmax_t num_indent) {
   inprint("InsertStatement", num_indent);
-  inprint(stmt->_tableName, num_indent + 1);
+  inprint(stmt->tableName, num_indent + 1);
   if (stmt->columns) {
     inprint("Columns", num_indent + 1);
     for (char* col_name : *stmt->columns) {

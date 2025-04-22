@@ -74,11 +74,11 @@ std::ostream& operator<<(std::ostream& stream, const ColumnType& column_type) {
 }
 
 // DeleteStatement
-DeleteStatement::DeleteStatement() : SQLStatement(kStmtDelete), schema(nullptr), _tableName(nullptr), expr(nullptr) {}
+DeleteStatement::DeleteStatement() : SQLStatement(kStmtDelete), schema(nullptr), tableName(nullptr), expr(nullptr) {}
 
 DeleteStatement::~DeleteStatement() {
   free(schema);
-  free(_tableName);
+  free(tableName);
   delete expr;
 }
 
@@ -138,14 +138,14 @@ ExportStatement::ExportStatement(ImportType type)
       type(type),
       filePath(nullptr),
       schema(nullptr),
-      _tableName(nullptr),
+      tableName(nullptr),
       select(nullptr),
       encoding(nullptr) {}
 
 ExportStatement::~ExportStatement() {
   free(filePath);
   free(schema);
-  free(_tableName);
+  free(tableName);
   delete select;
   free(encoding);
 }
@@ -160,14 +160,14 @@ ImportStatement::ImportStatement(ImportType type)
       type(type),
       filePath(nullptr),
       schema(nullptr),
-      _tableName(nullptr),
+      tableName(nullptr),
       whereClause(nullptr),
       encoding(nullptr) {}
 
 ImportStatement::~ImportStatement() {
   free(filePath);
   free(schema);
-  free(_tableName);
+  free(tableName);
   delete whereClause;
   free(encoding);
 }
@@ -177,14 +177,14 @@ InsertStatement::InsertStatement(InsertType type)
     : SQLStatement(kStmtInsert),
       type(type),
       schema(nullptr),
-      _tableName(nullptr),
+      tableName(nullptr),
       columns(nullptr),
       values(nullptr),
       select(nullptr) {}
 
 InsertStatement::~InsertStatement() {
   free(schema);
-  free(_tableName);
+  free(tableName);
   delete select;
 
   if (columns) {
@@ -240,7 +240,7 @@ GroupByDescription::~GroupByDescription() {
 }
 
 WithDescription::~WithDescription() {
-  free(tableAlias);
+  free(alias);
   delete select;
 }
 
@@ -339,7 +339,7 @@ Alias::~Alias() {
 
 // TableRef
 TableRef::TableRef(TableRefType type)
-    : type(type), schema(nullptr), name(nullptr), tableAlias(nullptr), select(nullptr), list(nullptr), join(nullptr) {}
+    : type(type), schema(nullptr), name(nullptr), alias(nullptr), select(nullptr), list(nullptr), join(nullptr) {}
 
 TableRef::~TableRef() {
   free(schema);
@@ -347,7 +347,7 @@ TableRef::~TableRef() {
 
   delete select;
   delete join;
-  delete tableAlias;
+  delete alias;
 
   if (list) {
     for (TableRef* table : *list) {
@@ -360,8 +360,8 @@ TableRef::~TableRef() {
 bool TableRef::hasSchema() const { return schema != nullptr; }
 
 const char* TableRef::getName() const {
-  if (tableAlias)
-    return tableAlias->name;
+  if (alias)
+    return alias->name;
   else
     return name;
 }

@@ -123,7 +123,7 @@ namespace MiniDb::Statement {
 				// Podstawowy przypadek: Znaleziono referencję do tabeli
 				const hsql::TableRef* tableRef = ref;
 				std::string tableName = tableRef->name;
-				std::string tableAlias = (tableRef->tableAlias != nullptr) ? tableRef->tableAlias->name : tableName;
+				std::string tableAlias = (tableRef->alias != nullptr) ? tableRef->alias->name : tableName;
 
 				MiniDb::Table::Table& table = database.getTable(tableName);
 				table.loadDataFromFile();
@@ -165,7 +165,7 @@ namespace MiniDb::Statement {
 				}
 
 				// 5. Parsuj warunek ON dla tego konkretnego JOINa
-				if (!joinDefinition->condition || joinDefinition->condition->type != hsql::kExprOperator || joinDefinition->condition->operatorType != hsql::kOpEquals ||
+				if (!joinDefinition->condition || joinDefinition->condition->type != hsql::kExprOperator || joinDefinition->condition->opType != hsql::kOpEquals ||
 					!joinDefinition->condition->expr || joinDefinition->condition->expr->type != hsql::kExprColumnRef ||
 					!joinDefinition->condition->expr2 || joinDefinition->condition->expr2->type != hsql::kExprColumnRef) {
 					throw std::runtime_error("JOIN condition must be a simple column equality (alias1.col1 = alias2.col2).");
@@ -197,7 +197,7 @@ namespace MiniDb::Statement {
 				}
 
 				// Przypisz sparsowany warunek do informacji o ostatnio dodanej tabeli
-				JoinCondition joinCondition(leftTableAlias, leftColumnName, rightTableAlias, rightColumnName, joinDefinition->condition->operatorType);
+				JoinCondition joinCondition(leftTableAlias, leftColumnName, rightTableAlias, rightColumnName, joinDefinition->condition->opType);
 				queryTables.last().joinCondition = std::move(joinCondition);
 
 				break;
@@ -266,7 +266,7 @@ namespace MiniDb::Statement {
 			const auto* clause = _statement->whereClause;
 			// Uproszczone parsowanie: zakładamy column op literal
 			if (clause->type == hsql::kExprOperator &&
-				clause->operatorType != hsql::kOpOr && clause->operatorType != hsql::kOpAnd &&
+				clause->opType != hsql::kOpOr && clause->opType != hsql::kOpAnd &&
 				clause->expr && clause->expr->type == hsql::kExprColumnRef &&
 				clause->expr2 && (clause->expr2->type == hsql::kExprLiteralInt || clause->expr2->type == hsql::kExprLiteralString || clause->expr2->type == hsql::kExprLiteralFloat))
 			{
@@ -296,7 +296,7 @@ namespace MiniDb::Statement {
 					throw std::runtime_error("Unsupported literal type in WHERE clause.");
 				}
 
-				whereConditionOptional.emplace(MiniDb::Statement::WhereCondition(tableAlias, colName, clause->operatorType, literal));
+				whereConditionOptional.emplace(MiniDb::Statement::WhereCondition(tableAlias, colName, clause->opType, literal));
 
 			}
 			else {

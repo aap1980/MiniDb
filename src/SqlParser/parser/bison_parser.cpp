@@ -3559,7 +3559,7 @@ yyreduce:
   (yyval.import_stmt) = new ImportStatement((yyvsp[-4].import_type_t));
   (yyval.import_stmt)->filePath = (yyvsp[-2].sval);
   (yyval.import_stmt)->schema = (yyvsp[0].table_name).schema;
-  (yyval.import_stmt)->_tableName = (yyvsp[0].table_name).name;
+  (yyval.import_stmt)->tableName = (yyvsp[0].table_name).name;
 }
 #line 3563 "bison_parser.cpp"
     break;
@@ -3570,7 +3570,7 @@ yyreduce:
   (yyval.import_stmt) = new ImportStatement((yyvsp[-1].import_export_option_t)->format);
   (yyval.import_stmt)->filePath = (yyvsp[-2].sval);
   (yyval.import_stmt)->schema = (yyvsp[-4].table_name).schema;
-  (yyval.import_stmt)->_tableName = (yyvsp[-4].table_name).name;
+  (yyval.import_stmt)->tableName = (yyvsp[-4].table_name).name;
   (yyval.import_stmt)->whereClause = (yyvsp[0].expr);
   if ((yyvsp[-1].import_export_option_t)->encoding) {
     (yyval.import_stmt)->encoding = (yyvsp[-1].import_export_option_t)->encoding;
@@ -3677,7 +3677,7 @@ yyreduce:
   (yyval.export_stmt) = new ExportStatement((yyvsp[0].import_export_option_t)->format);
   (yyval.export_stmt)->filePath = (yyvsp[-1].sval);
   (yyval.export_stmt)->schema = (yyvsp[-3].table_name).schema;
-  (yyval.export_stmt)->_tableName = (yyvsp[-3].table_name).name;
+  (yyval.export_stmt)->tableName = (yyvsp[-3].table_name).name;
   if ((yyvsp[0].import_export_option_t)->encoding) {
     (yyval.export_stmt)->encoding = (yyvsp[0].import_export_option_t)->encoding;
     (yyvsp[0].import_export_option_t)->encoding = nullptr;
@@ -3734,7 +3734,7 @@ yyreduce:
   (yyval.create_stmt) = new CreateStatement(kCreateTableFromTbl);
   (yyval.create_stmt)->ifNotExists = (yyvsp[-5].bval);
   (yyval.create_stmt)->schema = (yyvsp[-4].table_name).schema;
-  (yyval.create_stmt)->_tableName = (yyvsp[-4].table_name).name;
+  (yyval.create_stmt)->tableName = (yyvsp[-4].table_name).name;
   if (strcasecmp((yyvsp[-2].sval), "tbl") != 0) {
     free((yyvsp[-2].sval));
     yyerror(&yyloc, result, scanner, "File type is unknown.");
@@ -3752,7 +3752,7 @@ yyreduce:
   (yyval.create_stmt) = new CreateStatement(kCreateTable);
   (yyval.create_stmt)->ifNotExists = (yyvsp[-4].bval);
   (yyval.create_stmt)->schema = (yyvsp[-3].table_name).schema;
-  (yyval.create_stmt)->_tableName = (yyvsp[-3].table_name).name;
+  (yyval.create_stmt)->tableName = (yyvsp[-3].table_name).name;
   (yyval.create_stmt)->setColumnDefsAndConstraints((yyvsp[-1].table_element_vec));
   delete (yyvsp[-1].table_element_vec);
   if (result->errorMsg()) {
@@ -3769,7 +3769,7 @@ yyreduce:
   (yyval.create_stmt) = new CreateStatement(kCreateTable);
   (yyval.create_stmt)->ifNotExists = (yyvsp[-3].bval);
   (yyval.create_stmt)->schema = (yyvsp[-2].table_name).schema;
-  (yyval.create_stmt)->_tableName = (yyvsp[-2].table_name).name;
+  (yyval.create_stmt)->tableName = (yyvsp[-2].table_name).name;
   (yyval.create_stmt)->select = (yyvsp[0].select_stmt);
 }
 #line 3774 "bison_parser.cpp"
@@ -3781,7 +3781,7 @@ yyreduce:
   (yyval.create_stmt) = new CreateStatement(kCreateIndex);
   (yyval.create_stmt)->indexName = (yyvsp[-5].sval);
   (yyval.create_stmt)->ifNotExists = (yyvsp[-6].bval);
-  (yyval.create_stmt)->_tableName = (yyvsp[-3].table_name).name;
+  (yyval.create_stmt)->tableName = (yyvsp[-3].table_name).name;
   (yyval.create_stmt)->indexColumns = (yyvsp[-1].str_vec);
 }
 #line 3786 "bison_parser.cpp"
@@ -3793,7 +3793,7 @@ yyreduce:
   (yyval.create_stmt) = new CreateStatement(kCreateView);
   (yyval.create_stmt)->ifNotExists = (yyvsp[-4].bval);
   (yyval.create_stmt)->schema = (yyvsp[-3].table_name).schema;
-  (yyval.create_stmt)->_tableName = (yyvsp[-3].table_name).name;
+  (yyval.create_stmt)->tableName = (yyvsp[-3].table_name).name;
   (yyval.create_stmt)->viewColumns = (yyvsp[-2].str_vec);
   (yyval.create_stmt)->select = (yyvsp[0].select_stmt);
 }
@@ -4179,7 +4179,7 @@ yyreduce:
                                                     {
   (yyval.delete_stmt) = new DeleteStatement();
   (yyval.delete_stmt)->schema = (yyvsp[-1].table_name).schema;
-  (yyval.delete_stmt)->_tableName = (yyvsp[-1].table_name).name;
+  (yyval.delete_stmt)->tableName = (yyvsp[-1].table_name).name;
   (yyval.delete_stmt)->expr = (yyvsp[0].expr);
 }
 #line 4184 "bison_parser.cpp"
@@ -4190,7 +4190,7 @@ yyreduce:
                                          {
   (yyval.delete_stmt) = new DeleteStatement();
   (yyval.delete_stmt)->schema = (yyvsp[0].table_name).schema;
-  (yyval.delete_stmt)->_tableName = (yyvsp[0].table_name).name;
+  (yyval.delete_stmt)->tableName = (yyvsp[0].table_name).name;
 }
 #line 4194 "bison_parser.cpp"
     break;
@@ -4200,7 +4200,7 @@ yyreduce:
                                                                                                {
   (yyval.insert_stmt) = new InsertStatement(kInsertValues);
   (yyval.insert_stmt)->schema = (yyvsp[-5].table_name).schema;
-  (yyval.insert_stmt)->_tableName = (yyvsp[-5].table_name).name;
+  (yyval.insert_stmt)->tableName = (yyvsp[-5].table_name).name;
   (yyval.insert_stmt)->columns = (yyvsp[-4].str_vec);
   (yyval.insert_stmt)->values = (yyvsp[-1].expr_vec);
 }
@@ -4212,7 +4212,7 @@ yyreduce:
                                                          {
   (yyval.insert_stmt) = new InsertStatement(kInsertSelect);
   (yyval.insert_stmt)->schema = (yyvsp[-2].table_name).schema;
-  (yyval.insert_stmt)->_tableName = (yyvsp[-2].table_name).name;
+  (yyval.insert_stmt)->tableName = (yyvsp[-2].table_name).name;
   (yyval.insert_stmt)->columns = (yyvsp[-1].str_vec);
   (yyval.insert_stmt)->select = (yyvsp[0].select_stmt);
 }
@@ -4690,7 +4690,7 @@ yyreduce:
                             {
   (yyval.expr) = (yyvsp[-1].expr);
   if ((yyvsp[0].alias_t)) {
-    (yyval.expr)->tableAlias = (yyvsp[0].alias_t)->name;
+    (yyval.expr)->alias = (yyvsp[0].alias_t)->name;
     (yyvsp[0].alias_t)->name = nullptr;
     delete (yyvsp[0].alias_t);
   }
@@ -5293,7 +5293,7 @@ yyreduce:
                                                                                      {
   auto tbl = new TableRef(kTableSelect);
   tbl->select = (yyvsp[-2].select_stmt);
-  tbl->tableAlias = (yyvsp[0].alias_t);
+  tbl->alias = (yyvsp[0].alias_t);
   (yyval.table) = tbl;
 }
 #line 5298 "bison_parser.cpp"
@@ -5323,7 +5323,7 @@ yyreduce:
   auto tbl = new TableRef(kTableName);
   tbl->schema = (yyvsp[-1].table_name).schema;
   tbl->name = (yyvsp[-1].table_name).name;
-  tbl->tableAlias = (yyvsp[0].alias_t);
+  tbl->alias = (yyvsp[0].alias_t);
   (yyval.table) = tbl;
 }
 #line 5328 "bison_parser.cpp"
@@ -5527,7 +5527,7 @@ yyreduce:
 #line 1335 "bison_parser.y"
                                                    {
   (yyval.with_description_t) = new WithDescription();
-  (yyval.with_description_t)->tableAlias = (yyvsp[-2].sval);
+  (yyval.with_description_t)->alias = (yyvsp[-2].sval);
   (yyval.with_description_t)->select = (yyvsp[0].select_stmt);
 }
 #line 5532 "bison_parser.cpp"

@@ -15,7 +15,7 @@ struct InsertStatement : SQLStatement {
 
   InsertType type;
   char* schema;
-  char* _tableName;
+  char* tableName;
   std::vector<char*>* columns;
   std::vector<Expr*>* values;
   SelectStatement* select;

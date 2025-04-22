@@ -133,7 +133,7 @@ struct Expr {
   SelectStatement* select;
   char* name;
   char* table;
-  char* tableAlias;
+  char* alias;
   double fval;
   int64_t ival;
   int64_t ival2;
@@ -141,7 +141,7 @@ struct Expr {
   ColumnType columnType;
   bool isBoolLiteral;
 
-  OperatorType operatorType;
+  OperatorType opType;
   bool distinct;
 
   WindowDescription* windowDescription;

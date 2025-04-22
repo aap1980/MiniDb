@@ -15,7 +15,7 @@ struct ExportStatement : SQLStatement {
   ImportType type;
   char* filePath;
   char* schema;
-  char* _tableName;
+  char* tableName;
   SelectStatement* select;
   char* encoding;
 };

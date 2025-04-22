@@ -14,7 +14,7 @@ struct DeleteStatement : SQLStatement {
   ~DeleteStatement() override;
 
   char* schema;
-  char* _tableName;
+  char* tableName;
   Expr* expr;
 };
 
