@@ -20,3 +20,5 @@ SELECT u.login,
  WHERE u.user_id = 2;
 
 SELECT * FROM NotExistsTable;
+
+

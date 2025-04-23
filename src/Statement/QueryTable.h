@@ -7,7 +7,6 @@
 
 namespace MiniDb::Statement {
 
-	// Informacje o tabeli bior¹cej udzia³ w zapytaniu
 	class QueryTable {
 	public:
 		QueryTable(const std::string& tableAlias, const std::string& tableName, MiniDb::Table::Table& table);

@@ -130,8 +130,7 @@ namespace MiniDb::Statement {
 
 				// Dodajemy tabelę bez warunku JOIN, bo to albo tabela bazowa, albo prawa strona JOINa,
 				// której warunek zostanie dodany później w sekcji kTableJoin
-				QueryTable queryTableInfo(tableAlias, tableName, table);
-				queryTables.addTable(queryTableInfo);
+				queryTables.addTable(QueryTable(tableAlias, tableName, table));
 				break;
 			}
 
@@ -224,14 +223,13 @@ namespace MiniDb::Statement {
 		bool selectAll = _statement->selectList->size() == 1 && (*_statement->selectList)[0]->type == hsql::kExprStar;
 
 		if (selectAll) {
-			for (const auto& queryTableInfo : queryTables.tables) {
-				for (const auto& column : queryTableInfo.table.columns.getColumns()) {
+			for (const auto& queryTable : queryTables.tables) {
+				for (const auto& column : queryTable.table.columns.getColumns()) {
 					// Tworzymy nową definicję dla wyniku, potencjalnie z prefiksem aliasu dla jasności
 					MiniDb::Table::Column resultColDef = column; // Kopiujemy metadane
-					resultColDef.name = queryTableInfo.tableAlias + "." + column.name; // Np. "u.login"
+					resultColDef.name = queryTable.tableAlias + "." + column.name; // Np. "u.login"
 					resultColumnsDefinition.addColumn(resultColDef);
-					MiniDb::Statement::SelectedColumn selectedColumnInfo(queryTableInfo.tableAlias, column.name, column);
-					selectedColumns.addColumn(selectedColumnInfo);
+					selectedColumns.addColumn(MiniDb::Statement::SelectedColumn(queryTable.tableAlias, column.name, column));
 				}
 			}
 		}
@@ -250,8 +248,7 @@ namespace MiniDb::Statement {
 					const MiniDb::Table::Table& sourceTable = queryTables.getByAlias(tableAlias).table;
 					const MiniDb::Table::Column& sourceColumn = sourceTable.columns.getColumnByName(columnName);
 					resultColumnsDefinition.addColumn(sourceColumn);
-					MiniDb::Statement::SelectedColumn selectedColumnInfo(tableAlias, columnName, sourceColumn);
-					selectedColumns.addColumn(selectedColumnInfo);
+					selectedColumns.addColumn(MiniDb::Statement::SelectedColumn(tableAlias, columnName, sourceColumn));
 				}
 				else {
 					throw std::runtime_error("Unsupported expression type in SELECT list. Only columns (alias.name) or * are supported.");
@@ -312,18 +309,18 @@ namespace MiniDb::Statement {
 		std::function<void(size_t, ActiveJoinRowsMap)> processJoinLevel =
 			[&](size_t currentTableIndex, ActiveJoinRowsMap activeRowsMap)
 			{
-				const QueryTable& currentTableInfo = queryTables.getByIndex(currentTableIndex);
+				const QueryTable& currentTable = queryTables.getByIndex(currentTableIndex);
 
-				for (const MiniDb::Table::Row& row : currentTableInfo.table.rows.getRows()) {
-					activeRowsMap[currentTableInfo.tableAlias] = &row;
+				for (const MiniDb::Table::Row& row : currentTable.table.rows.getRows()) {
+					activeRowsMap[currentTable.tableAlias] = &row;
 
 					bool joinOk = true;
 					if (currentTableIndex > 0) { // Sprawdź warunek JOIN dla tabel > 0
-						// joinCondition powinno być ustawione w QueryTableInfo dla tabel > 0
-						if (!currentTableInfo.joinCondition.has_value()) {
-							throw std::logic_error("Internal error: Missing JOIN condition for table " + currentTableInfo.tableAlias);
+
+						if (!currentTable.joinCondition.has_value()) {
+							throw std::logic_error("Internal error: Missing JOIN condition for table " + currentTable.tableAlias);
 						}
-						joinOk = evaluateJoinCondition(queryTables, currentTableInfo.joinCondition.value(), activeRowsMap);
+						joinOk = evaluateJoinCondition(queryTables, currentTable.joinCondition.value(), activeRowsMap);
 					}
 
 					if (joinOk) {
