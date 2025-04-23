@@ -56,17 +56,17 @@ namespace MiniDb::Statement {
 			throw std::runtime_error("Missing column definitions in CREATE TABLE statement.");
 		}
 
-		for (const hsql::ColumnDefinition* hsqlColDef : *_statement->columns) {
-			if (!hsqlColDef || !hsqlColDef->name) {
+		for (const hsql::ColumnDefinition* columnDefinition : *_statement->columns) {
+			if (!columnDefinition || !columnDefinition->name) {
 				throw std::runtime_error("Invalid column definition in CREATE TABLE statement.");
 			}
-			std::string colName = hsqlColDef->name;
-			if (!columnNames.insert(colName).second) {
-				throw std::runtime_error("Duplicate column name '" + colName + "' in CREATE TABLE statement.");
+			std::string columName = columnDefinition->name;
+			if (!columnNames.insert(columName).second) {
+				throw std::runtime_error("Duplicate column name '" + columName + "' in CREATE TABLE statement.");
 			}
-			std::string columnType = MiniDb::Utils::SqlUtils::dataTypeToString(hsqlColDef->type.data_type);
-			bool isNotNull = !hsqlColDef->nullable;
-			MiniDb::Table::Column column(colName, columnType);
+			std::string columnType = MiniDb::Utils::SqlUtils::dataTypeToString(columnDefinition->type.data_type);
+			bool isNotNull = !columnDefinition->nullable;
+			MiniDb::Table::Column column(columName, columnType);
 			columns.addColumn(column);
 		}
 
