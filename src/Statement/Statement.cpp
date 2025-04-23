@@ -8,14 +8,6 @@
 
 namespace MiniDb::Statement {
 
-	void Statement::executeNoResult(MiniDb::Database::Database&) const {
-		throw std::logic_error("This statement type does not support void execution.");
-	}
-
-	std::unique_ptr<MiniDb::Table::QueryResult> Statement::executeResult(MiniDb::Database::Database&) const {
-		throw std::logic_error("This statement type does not return a result.");
-	}
-
 	std::unique_ptr<Statement> Statement::fromSQL(const std::string& sql) {
 		auto result = std::make_unique<hsql::SQLParserResult>();
 		hsql::SQLParser::parse(sql, result.get());
