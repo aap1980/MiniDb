@@ -8,9 +8,9 @@
 
 namespace MiniDb::Statement {
 
-	class CreateStatement : public Statement {
+	class CreateTableStatement : public Statement {
 	public:
-		explicit CreateStatement(std::unique_ptr<hsql::SQLParserResult> parserResult);
+		explicit CreateTableStatement(std::unique_ptr<hsql::SQLParserResult> parserResult);
 		std::unique_ptr<MiniDb::Table::QueryResult> execute(MiniDb::Database::Database& database) const override;
 
 	private:

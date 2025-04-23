@@ -1,4 +1,4 @@
-#include "CreateStatement.h"
+#include "CreateTableStatement.h"
 #include "../Database/Database.h"
 #include "../Table/Columns.h"
 #include "../Table/Column.h"
@@ -14,12 +14,12 @@
 
 namespace MiniDb::Statement {
 
-	CreateStatement::CreateStatement(std::unique_ptr<hsql::SQLParserResult> parserResult) {
+	CreateTableStatement::CreateTableStatement(std::unique_ptr<hsql::SQLParserResult> parserResult) {
 		_parserResult = std::move(parserResult);
 		_statement = static_cast<const hsql::CreateStatement*>(_parserResult->getStatement(0));
 	}
 
-	std::unique_ptr<MiniDb::Table::QueryResult> CreateStatement::execute(MiniDb::Database::Database& database) const {
+	std::unique_ptr<MiniDb::Table::QueryResult> CreateTableStatement::execute(MiniDb::Database::Database& database) const {
 		std::string tableName = _statement->tableName;
 		bool ifNotExists = _statement->ifNotExists;
 
