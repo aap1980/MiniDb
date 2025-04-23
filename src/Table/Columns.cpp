@@ -16,8 +16,8 @@ namespace MiniDb::Table {
 		_columns.push_back(column);
 	}
 
-	void Columns::addColumns(const std::vector<Column>& columns) {
-		for (const auto& column : columns) {
+	void Columns::addColumns(const Columns& columns) {
+		for (const auto& column : columns.getColumns()) {
 			addColumn(column);
 		}
 	}

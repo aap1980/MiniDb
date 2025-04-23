@@ -11,8 +11,9 @@ namespace MiniDb::Database {
 		Database() = default;
 	public:
 		static Database& getInstance();
-		void createTable(const std::string& tableName, const std::vector<MiniDb::Table::Column>& columns);
+		void createTable(const std::string& tableName, const MiniDb::Table::Columns& columns);
 		void loadTables();
+		bool tableExists(const std::string& tableName) const;
 		MiniDb::Table::Table& getTable(const std::string& tableName);
 	};
 

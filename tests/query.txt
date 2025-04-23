@@ -1,3 +1,11 @@
+CREATE TABLE TestData (id INT, name TEXT, value FLOAT, active BOOLEAN);
+
+INSERT INTO TestData (id, name, value, active) VALUES
+(1, 'Alpha', 10.5, TRUE),
+(2, 'Beta', 20.0, FALSE),
+(3, 'Gamma', 15.75, TRUE);
+
+
 SELECT * FROM Users;
 SELECT * FROM Projects;
 SELECT * FROM UserProject;
