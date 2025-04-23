@@ -17,15 +17,7 @@ int main() {
 
 	database.loadTables();
 
-	/*std::vector<MiniDb::Table::Column> columns;
-	columns.push_back({ "id", "int" });
-	columns.push_back({ "login", "string" });
-	columns.push_back({ "first_name", "string" });
-	columns.push_back({ "last_name", "string" });
-	columns.push_back({ "created_at", "date" });
-	columns.push_back({ "updateed_at", "date" });
-	database.createTable("Users", columns);
-
+	/*
 	MiniDb::Table::Table& usersTable = database.getTable("Users");
 
 	usersTable.addRow({ "1", "user1", "", "", MiniDb::Utils::DateTimeUtils::getCurrentDatetimeAsString(), MiniDb::Utils::DateTimeUtils::getCurrentDatetimeAsString() });

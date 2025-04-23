@@ -22,11 +22,15 @@ namespace MiniDb::Console {
 	}
 
 	void Console::parseCommand(const std::string& command) {
-		MiniDb::Database::Database& database = MiniDb::Database::Database::getInstance();
+		auto& database = MiniDb::Database::Database::getInstance();
 		std::unique_ptr<MiniDb::Statement::Statement> statement = MiniDb::Statement::Statement::fromSQL(command);
-		if (statement) {
-			const auto& queryResult = statement->execute(database);
-			queryResult->print();
+
+		if (statement->returnsResult()) {
+			const auto& result = statement->executeResult(database);
+			result->print();
+		}
+		else {
+			statement->executeNoResult(database);
 		}
 	}
 

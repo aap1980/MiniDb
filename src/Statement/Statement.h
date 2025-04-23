@@ -12,8 +12,14 @@ namespace MiniDb::Statement {
 	public:
 		virtual ~Statement() = default;
 
-		// G³ówna metoda wykonuj¹ca zapytanie
-		virtual std::unique_ptr<MiniDb::Table::QueryResult> execute(MiniDb::Database::Database& database) const = 0;
+		// Czy to zapytanie zwracajÄ…ce zestaw wierszy?
+		virtual bool returnsResult() const = 0;
+
+		// Wykonuje zapytania: CREATE, DELET
+		virtual void executeNoResult(MiniDb::Database::Database& database) const;
+
+		// Wykonuje zapytania: SELECT
+		virtual std::unique_ptr<MiniDb::Table::QueryResult> executeResult(MiniDb::Database::Database& database) const = 0;
 
 		// Fabryka: tworzy Statement z wyniku SQLParsera
 		static std::unique_ptr<Statement> fromSQL(const std::string& sql);

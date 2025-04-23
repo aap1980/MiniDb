@@ -10,7 +10,8 @@ namespace MiniDb::Statement {
 	class SelectStatement : public Statement {
 	public:
 		explicit SelectStatement(std::unique_ptr<hsql::SQLParserResult> parserResult);
-		std::unique_ptr<MiniDb::Table::QueryResult> execute(MiniDb::Database::Database& database) const override;
+		bool returnsResult() const override;
+		std::unique_ptr<MiniDb::Table::QueryResult> executeResult(MiniDb::Database::Database& database) const override;
 
 	private:
 		std::unique_ptr<hsql::SQLParserResult> _parserResult = nullptr;

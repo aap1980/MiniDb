@@ -102,7 +102,11 @@ namespace MiniDb::Statement {
 		}
 	}
 
-	std::unique_ptr<MiniDb::Table::QueryResult> SelectStatement::execute(MiniDb::Database::Database& database) const {
+	bool SelectStatement::returnsResult() const {
+		return true;
+	}
+
+	std::unique_ptr<MiniDb::Table::QueryResult> SelectStatement::executeResult(MiniDb::Database::Database& database) const {
 		if (!_statement || !_statement->fromTable) {
 			throw std::runtime_error("Invalid SELECT statement structure: missing FROM clause.");
 		}

@@ -22,6 +22,8 @@ namespace MiniDb::Database {
 		table.saveMetadataToFile();
 
 		tables.emplace(tableName, std::move(table));
+
+		std::cout << "Table '" << tableName << "' created successfully." << std::endl;
 	}
 
 	void Database::loadTables() {
@@ -31,7 +33,7 @@ namespace MiniDb::Database {
 				std::string _tableName = entry.path().stem().string();
 				MiniDb::Table::Table table(_tableName);
 				tables.emplace(_tableName, std::move(table));
-				std::cout << "Successfully loaded table: " << _tableName << "\n";
+				std::cout << "Successfully loaded table: " << _tableName << std::endl;
 			}
 		}
 	}

@@ -19,7 +19,11 @@ namespace MiniDb::Statement {
 		_statement = static_cast<const hsql::CreateStatement*>(_parserResult->getStatement(0));
 	}
 
-	std::unique_ptr<MiniDb::Table::QueryResult> CreateTableStatement::execute(MiniDb::Database::Database& database) const {
+	bool CreateTableStatement::returnsResult() const {
+		return false;
+	}
+
+	void CreateTableStatement::executeNoResult(MiniDb::Database::Database& database) const {
 		std::string tableName = _statement->tableName;
 		bool ifNotExists = _statement->ifNotExists;
 
@@ -39,9 +43,7 @@ namespace MiniDb::Statement {
 		// Sprawdzamy istnienie tabeli
 		if (database.tableExists(tableName)) {
 			if (ifNotExists) {
-				std::cout << "Notice: Table '" << tableName << "' already exists, skipping creation (IF NOT EXISTS specified)." << std::endl;
-				// Zwróæ pusty, ale wa¿ny obiekt QueryResult, zgodnie z sygnatur¹ metody bazowej
-				return std::make_unique<MiniDb::Table::QueryResult>();
+				std::cout << "Table '" << tableName << "' already exists, skipping creation." << std::endl;
 			}
 			else {
 				throw std::runtime_error("Table '" + tableName + "' already exists.");
@@ -82,10 +84,6 @@ namespace MiniDb::Statement {
 			throw std::runtime_error("Failed to register table '" + tableName + "': " + e.what());
 		}
 
-		std::cout << "Table '" << tableName << "' created successfully." << std::endl;
-
-		// Zwróæ pusty, ale wa¿ny obiekt QueryResult, zgodnie z sygnatur¹ metody bazowej
-		return std::make_unique<MiniDb::Table::QueryResult>();
 	}
 
 }

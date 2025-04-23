@@ -11,7 +11,8 @@ namespace MiniDb::Statement {
 	class CreateTableStatement : public Statement {
 	public:
 		explicit CreateTableStatement(std::unique_ptr<hsql::SQLParserResult> parserResult);
-		std::unique_ptr<MiniDb::Table::QueryResult> execute(MiniDb::Database::Database& database) const override;
+		bool returnsResult() const override;
+		void executeNoResult(MiniDb::Database::Database& database) const override;
 
 	private:
 		std::unique_ptr<hsql::SQLParserResult> _parserResult = nullptr;
