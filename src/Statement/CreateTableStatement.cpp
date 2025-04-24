@@ -28,7 +28,7 @@ namespace MiniDb::Statement {
 		bool ifNotExists = _statement->ifNotExists;
 
 		if (!_statement || _statement->type != hsql::kCreateTable) {
-			throw std::runtime_error("Internal error: Invalid statement type passed to CreateStatement constructor.");
+			throw std::runtime_error("Invalid statement type passed to CreateStatement constructor.");
 		}
 		if (!_statement->tableName) {
 			throw std::runtime_error("CREATE TABLE statement missing table name.");
@@ -81,7 +81,7 @@ namespace MiniDb::Statement {
 			database.createTable(tableName, columns);
 		}
 		catch (const std::exception& e) {
-			throw std::runtime_error("Failed to register table '" + tableName + "': " + e.what());
+			throw std::runtime_error("Failed to create table '" + tableName + "': " + e.what());
 		}
 
 	}

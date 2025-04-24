@@ -2,8 +2,8 @@
 
 namespace MiniDb::Table {
 
-    Column::Column(const std::string& name, const std::string& type)
-        : name(name), type(type) {
-    }
+	Column::Column(const std::string& name, const std::string& type, bool nullable)
+		: name(name), type(type), nullable(nullable) {
+	}
 
 }

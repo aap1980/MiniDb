@@ -1,5 +1,6 @@
 #include "Statement.h"
 #include "CreateTableStatement.h"
+#include "InsertStatement.h"
 #include "SelectStatement.h"
 #include "../SqlParser/SQLParser.h"
 #include "../SqlParser/SQLParserResult.h"
@@ -21,6 +22,8 @@ namespace MiniDb::Statement {
 		switch (stmt->type()) {
 		case hsql::kStmtCreate:
 			return std::make_unique<CreateTableStatement>(std::move(result));
+		case hsql::kStmtInsert:
+			return std::make_unique<InsertStatement>(std::move(result));
 		case hsql::kStmtSelect:
 			return std::make_unique<SelectStatement>(std::move(result));
 		default:

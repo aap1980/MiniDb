@@ -150,6 +150,9 @@
     <ClCompile Include="src\Statement\CreateTableStatement.cpp">
       <Filter>Statement</Filter>
     </ClCompile>
+    <ClCompile Include="src\Statement\InsertStatement.cpp">
+      <Filter>Statement</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Table\TableDataWriter.h">
@@ -309,6 +312,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Statement\CreateTableStatement.h">
+      <Filter>Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Statement\InsertStatement.h">
       <Filter>Statement</Filter>
     </ClInclude>
   </ItemGroup>

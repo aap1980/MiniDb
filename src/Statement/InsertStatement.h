@@ -7,15 +7,17 @@
 
 namespace MiniDb::Statement {
 
-	class CreateTableStatement : public Statement {
+	class InsertStatement : public Statement {
 	public:
-		explicit CreateTableStatement(std::unique_ptr<hsql::SQLParserResult> parserResult);
+		explicit InsertStatement(std::unique_ptr<hsql::SQLParserResult> parserResult);
 		bool returnsResult() const override;
 		void executeNoResult(MiniDb::Database::Database& database) const override;
 
 	private:
 		std::unique_ptr<hsql::SQLParserResult> _parserResult = nullptr;
-		const hsql::CreateStatement* _statement = nullptr;
+		const hsql::InsertStatement* _statement = nullptr;
+		std::string valueExprToString(const hsql::Expr* expr) const;
+		bool isValueExprNull(const hsql::Expr* expr) const;
 	};
 
 }
