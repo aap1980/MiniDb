@@ -68,20 +68,15 @@ namespace MiniDb::Statement {
 
 		// Definicja tabeli
 		MiniDb::Table::Table table = database.getTable(tableName);
-		const MiniDb::Table::Columns& tableColumns = table.columns;
-		const auto& tableColumnDefs = tableColumns.getColumns();
-		size_t tableColumnCount = tableColumnDefs.size();
+		const MiniDb::Table::Columns& columns = table.columns;
 
 		// Przygotuj wektor na wartoœci nowego wiersza
 		std::vector<std::string> rowValues;
-		rowValues.resize(tableColumnCount, "");
+		rowValues.resize(columns.size(), "");
 
 		const std::vector<hsql::Expr*>* insertValues = _statement->values;
 
-
-		// 2. SprawdŸ, czy podano listê kolumn (`INSERT INTO T (c1, c2) ...`)
 		if (_statement->columns != nullptr) {
-			// --- Przypadek B: Podano listê kolumn ---
 			const std::vector<char*>& targetColumnNames = *_statement->columns;
 			size_t numTargetColumns = targetColumnNames.size();
 			size_t numInsertValues = insertValues->size();
@@ -107,8 +102,8 @@ namespace MiniDb::Statement {
 
 				try {
 					// ZnajdŸ indeks i definicjê kolumny w tabeli docelowej
-					size_t tableColIndex = tableColumns.getColumnIndexByName(targetColName);
-					const MiniDb::Table::Column& colDef = tableColumnDefs[tableColIndex];
+					size_t tableColIndex = columns.getColumnIndexByName(targetColName);
+					const MiniDb::Table::Column& colDef = columns.getColumns()[tableColIndex];
 
 					// SprawdŸ NOT NULL constraint
 					if (isNull && colDef.isNotNull()) {
@@ -128,47 +123,21 @@ namespace MiniDb::Statement {
 			}
 
 			// SprawdŸ, czy nie pominiêto kolumn NOT NULL (które nie maj¹ wartoœci domyœlnej)
-			for (size_t i = 0; i < tableColumnCount; ++i) {
+			for (size_t i = 0; i < columns.size(); ++i) {
 				// Jeœli indeksu nie ma w 'filledIndices' ORAZ kolumna jest NOT NULL
-				if (filledIndices.find(i) == filledIndices.end() && tableColumnDefs[i].isNotNull()) {
+				if (filledIndices.find(i) == filledIndices.end() && columns.getColumns()[i].isNotNull()) {
 					// TODO: W przysz³oœci mo¿na by tu sprawdzaæ, czy kolumna ma wartoœæ DOMYŒLN¥
-					throw std::runtime_error("Non-nullable column '" + tableColumnDefs[i].name + "' must be specified in INSERT statement or have a default value.");
+					throw std::runtime_error("Non-nullable column '" + columns.getColumns()[i].name + "' must be specified in INSERT statement or have a default value.");
 				}
 			}
 
 		}
 		else {
-			// --- Przypadek A: Brak listy kolumn (`INSERT INTO T VALUES(...)`) ---
-			size_t numInsertValues = insertValues->size();
-
-			if (numInsertValues != tableColumnCount) {
-				throw std::runtime_error("Value count (" + std::to_string(numInsertValues) +
-					") doesn't match table column count (" + std::to_string(tableColumnCount) + ").");
-			}
-
-			// Przypisz wartoœci po kolei do `rowValues`
-			for (size_t i = 0; i < tableColumnCount; ++i) {
-				const hsql::Expr* valueExpr = (*insertValues)[i];
-				std::string valueStr = valueExprToString(valueExpr);
-				bool isNull = isValueExprNull(valueExpr);
-				const MiniDb::Table::Column& colDef = tableColumnDefs[i];
-
-				// SprawdŸ NOT NULL constraint
-				if (isNull && colDef.isNotNull()) {
-					throw std::runtime_error("Cannot insert NULL into non-nullable column '" + colDef.name + "'.");
-				}
-
-				// TODO: Walidacja typu - pomijamy na razie
-
-				rowValues[i] = valueStr;
-			}
+			throw std::runtime_error("INSERT statement must specify target column list explicitly.");
 		}
 
-		// 3. Stwórz obiekt Row
 		MiniDb::Table::Row newRow(std::move(rowValues));
 
-		// 4. Dodaj wiersz do bazy danych (np. dopisz do pliku)
-		//    Zak³adamy, ¿e Database ma metodê do zapisu/dopisania wiersza.
 		try {
 			//database.appendRowToTable(tableName, newRow); // Potrzebna implementacja tej metody w Database
 		}
