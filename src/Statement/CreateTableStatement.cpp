@@ -76,14 +76,7 @@ namespace MiniDb::Statement {
 			throw std::runtime_error("CREATE TABLE must define at least one column.");
 		}
 
-		// Tworzymy tabele
-		try {
-			database.createTable(tableName, columns);
-		}
-		catch (const std::exception& e) {
-			throw std::runtime_error("Failed to create table '" + tableName + "': " + e.what());
-		}
-
+		database.createTable(tableName, columns);
 	}
 
 }

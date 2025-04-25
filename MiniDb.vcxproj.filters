@@ -144,14 +144,14 @@
     <ClCompile Include="src\Statement\WhereCondition.cpp">
       <Filter>Statement</Filter>
     </ClCompile>
-    <ClCompile Include="src\Utils\SqlUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Statement\CreateTableStatement.cpp">
       <Filter>Statement</Filter>
     </ClCompile>
     <ClCompile Include="src\Statement\InsertStatement.cpp">
       <Filter>Statement</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils\SqlUtils.cpp">
+      <Filter>Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -308,14 +308,14 @@
     <ClInclude Include="src\Statement\WhereCondition.h">
       <Filter>Statement</Filter>
     </ClInclude>
-    <ClInclude Include="src\Utils\SqlUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Statement\CreateTableStatement.h">
       <Filter>Statement</Filter>
     </ClInclude>
     <ClInclude Include="src\Statement\InsertStatement.h">
       <Filter>Statement</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\SqlUtils.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

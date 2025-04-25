@@ -66,13 +66,10 @@ namespace MiniDb::Statement {
 			throw std::runtime_error("INSERT statement VALUES clause cannot be empty.");
 		}
 
-		// Definicja tabeli
 		MiniDb::Table::Table table = database.getTable(tableName);
 		const MiniDb::Table::Columns& columns = table.columns;
 
-		// Przygotuj wektor na wartoœci nowego wiersza
-		std::vector<std::string> rowValues;
-		rowValues.resize(columns.size(), "");
+		MiniDb::Table::Row row(columns.size());
 
 		const std::vector<hsql::Expr*>* insertValues = _statement->values;
 
@@ -90,44 +87,31 @@ namespace MiniDb::Statement {
 				throw std::runtime_error("INSERT statement cannot have an empty column list.");
 			}
 
-			// Mapuj podane wartoœci na odpowiednie pozycje w `rowValues`
-			std::set<size_t> filledIndices; // Œledzenie, które kolumny tabeli zosta³y wype³nione
+			// Mapuj podane wartoœci na odpowiednie pozycje w `row`
 			for (size_t i = 0; i < numTargetColumns; ++i) {
-				const char* targetColName = targetColumnNames[i];
-				if (!targetColName) { throw std::runtime_error("Internal error: null column name in INSERT list."); }
+				const char* targetColumnName = targetColumnNames[i];
+				if (!targetColumnName) { throw std::runtime_error("Internal error: null column name in INSERT list."); }
 
 				const hsql::Expr* valueExpr = (*insertValues)[i];
-				std::string valueStr = valueExprToString(valueExpr);
+				std::string valueString = valueExprToString(valueExpr);
 				bool isNull = isValueExprNull(valueExpr);
 
-				try {
-					// ZnajdŸ indeks i definicjê kolumny w tabeli docelowej
-					size_t tableColIndex = columns.getColumnIndexByName(targetColName);
-					const MiniDb::Table::Column& colDef = columns.getColumns()[tableColIndex];
+				size_t tableColumnIndex = columns.getColumnIndexByName(targetColumnName);
+				const MiniDb::Table::Column& colDef = columns.getColumns()[tableColumnIndex];
 
-					// SprawdŸ NOT NULL constraint
-					if (isNull && colDef.isNotNull()) {
-						throw std::runtime_error("Cannot insert NULL into non-nullable column '" + std::string(targetColName) + "'.");
-					}
-
-					// TODO: Walidacja typu (np. czy valueStr pasuje do colDef.type) - pomijamy na razie
-
-					// Przypisz wartoœæ do odpowiedniego miejsca w wektorze wiersza
-					rowValues[tableColIndex] = valueStr;
-					filledIndices.insert(tableColIndex);
-
+				if (isNull && colDef.isNotNull()) {
+					throw std::runtime_error("Cannot insert NULL into non-nullable column '" + std::string(targetColumnName) + "'.");
 				}
-				catch (const std::runtime_error& e) { // B³¹d z getColumnIndexByName
-					throw std::runtime_error("Column '" + std::string(targetColName) + "' specified in INSERT list not found in table '" + tableName + "'.");
-				}
+
+				row.setValueByIndex(tableColumnIndex, valueString);
 			}
 
-			// SprawdŸ, czy nie pominiêto kolumn NOT NULL (które nie maj¹ wartoœci domyœlnej)
+			// Czy nie pominiêto kolumn NOT NULL, które nie maj¹ wartoœci domyœlnej
 			for (size_t i = 0; i < columns.size(); ++i) {
-				// Jeœli indeksu nie ma w 'filledIndices' ORAZ kolumna jest NOT NULL
-				if (filledIndices.find(i) == filledIndices.end() && columns.getColumns()[i].isNotNull()) {
-					// TODO: W przysz³oœci mo¿na by tu sprawdzaæ, czy kolumna ma wartoœæ DOMYŒLN¥
-					throw std::runtime_error("Non-nullable column '" + columns.getColumns()[i].name + "' must be specified in INSERT statement or have a default value.");
+				const MiniDb::Table::Column& colDef = columns.getColumns()[i];
+				const std::string& value = row.getValueByIndex(i);
+				if (value.empty() && colDef.isNotNull()) {
+					throw std::runtime_error("Non-nullable column '" + colDef.name + "' must be specified in INSERT statement or have a default value.");
 				}
 			}
 
@@ -136,16 +120,8 @@ namespace MiniDb::Statement {
 			throw std::runtime_error("INSERT statement must specify target column list explicitly.");
 		}
 
-		MiniDb::Table::Row newRow(std::move(rowValues));
-
-		try {
-			//database.appendRowToTable(tableName, newRow); // Potrzebna implementacja tej metody w Database
-		}
-		catch (const std::exception& e) {
-			throw std::runtime_error("Failed to insert row into table '" + tableName + "': " + e.what());
-		}
-
-		std::cout << "Row inserted successfully into table '" << tableName << "'." << std::endl;
+		table.rows.addRow(row);
+		table.saveDataToFile();
 	}
 
 }

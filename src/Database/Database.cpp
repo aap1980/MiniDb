@@ -17,13 +17,17 @@ namespace MiniDb::Database {
 			throw std::runtime_error("Table '" + tableName + "' already exists.");
 		}
 
-		MiniDb::Table::Table table(tableName);
-		table.columns.addColumns(columns);
-		table.saveMetadataToFile();
-
-		tables.emplace(tableName, std::move(table));
-
-		std::cout << "Table '" << tableName << "' created successfully." << std::endl;
+		try {
+			MiniDb::Table::Table table(tableName);
+			table.columns.addColumns(columns);
+			table.saveMetadataToFile();
+			table.saveDataToFile();
+			tables.emplace(tableName, std::move(table));
+			std::cout << "Table '" << tableName << "' created successfully." << std::endl;
+		}
+		catch (const std::exception& e) {
+			throw std::runtime_error("Failed to create table '" + tableName + "': " + std::string(e.what()));
+		}
 	}
 
 	void Database::loadTables() {

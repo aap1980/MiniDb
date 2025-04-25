@@ -1,6 +1,11 @@
 #include "Row.h"
+#include <stdexcept>
 
 namespace MiniDb::Table {
+
+	Row::Row(std::size_t count, const std::string& defaultValue)
+		: _values(count, defaultValue) {
+	}
 
 	Row::Row(std::vector<std::string> values)
 		: _values(std::move(values)) {
@@ -20,6 +25,13 @@ namespace MiniDb::Table {
 
 	const std::string& Row::getValueByIndex(std::size_t index) const {
 		return _values.at(index);
+	}
+
+	void Row::setValueByIndex(std::size_t index, const std::string& value) {
+		if (index >= _values.size()) {
+			throw std::out_of_range("Row::setValueByIndex: index out of range");
+		}
+		_values[index] = value;
 	}
 
 }
