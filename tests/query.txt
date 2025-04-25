@@ -8,6 +8,7 @@ INSERT INTO TestData (id, name, value, active) VALUES (3, 'Gamma', 15.75, TRUE);
 SELECT * FROM Users;
 SELECT * FROM Projects;
 SELECT * FROM UserProject;
+SELECT * FROM TestData;
 
 SELECT * FROM Users WHERE user_id = 2;
 SELECT login, first_name, last_name, created_at FROM Users WHERE user_id = 2;

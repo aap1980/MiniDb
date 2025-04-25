@@ -66,7 +66,8 @@ namespace MiniDb::Statement {
 			throw std::runtime_error("INSERT statement VALUES clause cannot be empty.");
 		}
 
-		MiniDb::Table::Table table = database.getTable(tableName);
+		MiniDb::Table::Table& table = database.getTable(tableName);
+		table.loadDataFromFile();
 		const MiniDb::Table::Columns& columns = table.columns;
 
 		MiniDb::Table::Row row(columns.size());
@@ -97,9 +98,9 @@ namespace MiniDb::Statement {
 				bool isNull = isValueExprNull(valueExpr);
 
 				size_t tableColumnIndex = columns.getColumnIndexByName(targetColumnName);
-				const MiniDb::Table::Column& colDef = columns.getColumns()[tableColumnIndex];
+				const MiniDb::Table::Column& column = columns.getColumns()[tableColumnIndex];
 
-				if (isNull && colDef.isNotNull()) {
+				if (isNull && column.isNotNull()) {
 					throw std::runtime_error("Cannot insert NULL into non-nullable column '" + std::string(targetColumnName) + "'.");
 				}
 
