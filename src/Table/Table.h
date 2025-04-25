@@ -4,8 +4,6 @@
 #include <string>
 #include "Rows.h"
 #include "Columns.h"
-#include "QueryCondition.h"
-#include "ColumnUpdate.h"
 
 namespace MiniDb::Table {
 
@@ -19,9 +17,6 @@ namespace MiniDb::Table {
 		Columns columns;
 		Rows rows;
 		Table(const std::string& tableName);
-		//void addRow(const std::vector<std::string>& row);
-		//void updateRow(const QueryCondition& condition, const std::vector<MiniDb::Table::ColumnUpdate>& columns);
-		//void deleteRow(const QueryCondition& condition);
 		void loadMetadataFromFile();
 		void saveMetadataToFile();
 		void loadDataFromFile();

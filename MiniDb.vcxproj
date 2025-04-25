@@ -155,13 +155,10 @@
     <ClCompile Include="src\Statement\WhereCondition.cpp" />
     <ClCompile Include="src\Table\Column.cpp" />
     <ClCompile Include="src\Table\Columns.cpp" />
-    <ClCompile Include="src\Table\ColumnUpdate.cpp" />
-    <ClCompile Include="src\Table\QueryCondition.cpp" />
     <ClCompile Include="src\Table\QueryResult.cpp" />
     <ClCompile Include="src\Table\Row.cpp" />
     <ClCompile Include="src\Table\Rows.cpp" />
     <ClCompile Include="src\Table\Table.cpp" />
-    <ClCompile Include="src\Table\TableDataWriter.cpp" />
     <ClCompile Include="src\Utils\DateTimeUtils.cpp" />
     <ClCompile Include="src\Utils\SqlUtils.cpp" />
     <ClCompile Include="src\Utils\StringUtils.cpp" />
@@ -174,10 +171,9 @@
   <ItemGroup>
     <ClInclude Include="src\Config\Config.h" />
     <ClInclude Include="src\Console\Console.h" />
-    <ClInclude Include="src\Constants.h" />
+    <ClInclude Include="src\Constants\Constants.h" />
     <ClInclude Include="src\Database\Database.h" />
     <ClInclude Include="src\ErrorHandling.h" />
-    <ClInclude Include="src\Executors\SelectExecutor.h" />
     <ClInclude Include="src\SqlParser\parser\bison_parser.h" />
     <ClInclude Include="src\SqlParser\parser\flex_lexer.h" />
     <ClInclude Include="src\SqlParser\parser\parser_typedef.h" />
@@ -216,13 +212,10 @@
     <ClInclude Include="src\Statement\WhereCondition.h" />
     <ClInclude Include="src\Table\Column.h" />
     <ClInclude Include="src\Table\Columns.h" />
-    <ClInclude Include="src\Table\ColumnUpdate.h" />
-    <ClInclude Include="src\Table\QueryCondition.h" />
     <ClInclude Include="src\Table\QueryResult.h" />
     <ClInclude Include="src\Table\Row.h" />
     <ClInclude Include="src\Table\Rows.h" />
     <ClInclude Include="src\Table\Table.h" />
-    <ClInclude Include="src\Table\TableDataWriter.h" />
     <ClInclude Include="src\Utils\DateTimeUtils.h" />
     <ClInclude Include="src\Utils\SqlUtils.h" />
     <ClInclude Include="src\Utils\StringUtils.h" />

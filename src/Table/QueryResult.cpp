@@ -1,5 +1,5 @@
 #include "QueryResult.h"
-#include "../Constants.h"
+#include "../Constants/Constants.h"
 #include "../Utils/StringUtils.h"
 #include <iostream>
 #include <iomanip>

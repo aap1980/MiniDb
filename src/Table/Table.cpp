@@ -5,10 +5,9 @@
 #include "Row.h"
 #include "Rows.h"
 #include "Table.h"
-#include "../Constants.h"
+#include "../Constants/Constants.h"
 #include "../Config/Config.h"
 #include "../ErrorHandling.h"
-#include "ColumnUpdate.h"
 #include "filesystem"
 
 namespace MiniDb::Table {
@@ -121,112 +120,5 @@ namespace MiniDb::Table {
 
 		file.close();
 	}
-
-	//void Table::addRow(const std::vector<std::string>& row) {
-	//	if (row.size() != metadata.columns.size()) {
-	//		std::cerr << "Error: the number of data in a row does not match the number of columns.\n";
-	//		return;
-	//	}
-
-	//	rows.addRow(Row(row));
-	//	if (!writeRowToFile(row)) {
-	//		std::cerr << "Error: failed to add row to file.\n";
-	//	}
-	//}
-
-	/*void Table::updateRow(const QueryCondition& condition, const std::vector<MiniDb::Table::ColumnUpdate>& columns) {
-		std::vector<std::vector<std::string>> rows;
-		if (!readDataFromFile(dataFile, rows)) {
-			return;
-		}
-
-		bool found = false;
-		for (auto& row : rows) {
-			bool match = true;
-
-			const auto& conditions = condition.getConditions();
-			size_t colIndex = 0;
-
-			// Sprawdzanie, czy warunki w QueryCondition pasuj� do wiersza
-			for (const auto& [column, value] : conditions) {
-				auto matchLambda = [&row, &column, &value, &colIndex, this](bool& match) {
-					if (metadata.columns[colIndex].name == column && row[colIndex] != value) {
-						match = false;
-					}
-					};
-				matchLambda(match);
-
-				++colIndex;
-			}
-
-			// Aktualizacja odpowiednich kolumn na podstawie ColumnUpdate
-			if (match) {
-
-				for (const auto& columnUpdate : columns) {
-					const std::string& columnName = columnUpdate.getName();
-					const std::string& newValue = columnUpdate.getValue();
-
-					for (size_t i = 0; i < metadata.columns.size(); ++i) {
-						if (metadata.columns[i].name == columnName) {
-							row[i] = newValue;
-							break;
-						}
-					}
-				}
-
-				found = true;
-				break;
-			}
-		}
-
-		if (found) {
-			saveDataToFile(dataFile, rows);
-		}
-		else {
-			std::cerr << "Error: row not found for update.\n";
-		}
-	}*/
-
-	/*void Table::deleteRow(const QueryCondition& condition) {
-		std::vector<std::vector<std::string>> rows;
-		if (!readDataFromFile(dataFile, rows)) {
-			return;
-		}
-
-		bool found = false;
-		auto it = rows.begin();
-
-		while (it != rows.end()) {
-			bool match = true;
-			const auto& conditions = condition.getConditions();
-			size_t colIndex = 0;
-
-			for (const auto& [column, value] : conditions) {
-				auto matchLambda = [&row = *it, &column, &value, &colIndex, this](bool& match) {
-					if (metadata.columns[colIndex].name == column && row[colIndex] != value) {
-						match = false;
-					}
-					};
-				matchLambda(match);
-
-				++colIndex;
-			}
-
-			if (match) {
-				it = rows.erase(it);
-				found = true;
-			}
-			else {
-				++it;
-			}
-		}
-
-		if (found) {
-			saveDataToFile(dataFile, rows);
-		}
-		else {
-			std::cerr << "Error: row not found for deletion.\n";
-		}
-	}*/
 
 }
